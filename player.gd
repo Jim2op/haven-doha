@@ -2,7 +2,10 @@ extends CharacterBody3D
 
 @onready var MeleeRange = $MeleeRange
 @onready var CoolDownTimer = $CoolDown
-
+const BASE_HEALTH = 100
+var MaxHealth = BASE_HEALTH
+var Health = BASE_HEALTH
+var HealthMultiplier = 1
 
 @export var speed = 5
 
@@ -45,13 +48,17 @@ func _physics_process(delta: float) -> void:
 		if MeleeRange.is_colliding():
 			for i in MeleeRange.get_collision_count():
 				var collider = MeleeRange.get_collider(i)
-				print(collider)
 				if collider and collider.is_in_group("Enemies"):
-						print("Damage")
 						collider.take_damage(100)
 
-
+	#Health System
+	if Health >= MaxHealth:
+		Health = MaxHealth
+	MaxHealth = BASE_HEALTH * HealthMultiplier
 	move_and_slide()
+func take_damage(amt):
+	Health -= amt
+	print(Health)
 
 func _on_cool_down_timeout() -> void:
 	can_attack = true

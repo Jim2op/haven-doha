@@ -35,6 +35,7 @@ shadow_enabled = true
 
 [node name="Player" parent="." unique_id=740369154 instance=ExtResource("1_gojnm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3273401, 0.80049276, -0.788723)
+speed = 5
 
 [node name="PunchingBag" parent="." unique_id=1256021143 instance=ExtResource("3_f7g2b")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.020606, 0.5996094, 1.345068)

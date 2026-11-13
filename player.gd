@@ -4,6 +4,15 @@ extends CharacterBody3D
 @onready var CoolDownTimer = $CoolDown
 
 
+@export var speed = 5
+
+var path = []
+var cur_path_idx = 0
+var threshold = .1
+
+@onready var nav = get_parent()
+
+
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
 var can_attack = true

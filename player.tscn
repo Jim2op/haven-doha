@@ -1,11 +1,7 @@
 [gd_scene format=3 uid="uid://d2qc5t8ghsynl"]
 
 [ext_resource type="Script" uid="uid://duvj0vl4r5uiv" path="res://player.gd" id="1_4flbx"]
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_yf5fn"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4flbx"]
-albedo_color = Color(0.040850326, 0.69545, 0.8122231, 1)
+[ext_resource type="PackedScene" uid="uid://b10366sbe8fhd" path="res://knight.glb" id="2_onrkg"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g4v7s"]
 
@@ -14,9 +10,10 @@ albedo_color = Color(0.040850326, 0.69545, 0.8122231, 1)
 [node name="Player" type="CharacterBody3D" unique_id=740369154]
 script = ExtResource("1_4flbx")
 
+[node name="knight" parent="." unique_id=415018791 instance=ExtResource("2_onrkg")]
+transform = Transform3D(-0.959, 0, -1.8889575e-07, 0, 1, 0, 1.4480497e-07, 0, -1.251, 0, -0.981433, 0.018153787)
+
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=2008335598]
-mesh = SubResource("CapsuleMesh_yf5fn")
-surface_material_override/0 = SubResource("StandardMaterial3D_4flbx")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1756298855]
 shape = SubResource("CapsuleShape3D_g4v7s")

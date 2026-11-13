@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://6fwlku017014"]
+
+[ext_resource type="Script" uid="uid://cvjivfpb73gx2" path="res://small_goblin.gd" id="1_goblin"]
+[ext_resource type="PackedScene" uid="uid://b70xaswyfahtp" path="res://goblin.glb" id="2_ydv4c"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rvvka"]
+size = Vector3(1.5074463, 1.3285522, 0.61816406)
+
+[node name="SmallGoblin" type="CharacterBody3D" unique_id=2107203550 groups=["Enemies"]]
+script = ExtResource("1_goblin")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=638436644]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0022583008, -0.0022888184, 0.067871094)
+shape = SubResource("BoxShape3D_rvvka")
+debug_color = Color(0.28923562, 0.49939758, 9.62615e-08, 0.41960785)
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=905968591]
+path_desired_distance = 0.5
+target_desired_distance = 1.2
+
+[node name="goblin" parent="." unique_id=890418456 instance=ExtResource("2_ydv4c")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, -0.66907626, 0)

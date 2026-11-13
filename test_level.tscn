@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://dn8achum4wcrk" path="res://Prototype_Grid_Gray_06-512x512.png" id="1_1c2mv"]
 [ext_resource type="PackedScene" uid="uid://d2qc5t8ghsynl" path="res://player.tscn" id="1_gojnm"]
+[ext_resource type="PackedScene" uid="uid://y5dw3nxl84ba" path="res://punching_bag.tscn" id="3_f7g2b"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1c2mv"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -34,3 +35,6 @@ material = SubResource("StandardMaterial3D_1c2mv")
 
 [node name="Player" parent="." unique_id=740369154 instance=ExtResource("1_gojnm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3273401, 0.80049276, -0.788723)
+
+[node name="PunchingBag" parent="." unique_id=1256021143 instance=ExtResource("3_f7g2b")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.020606, 0.5996094, 1.345068)

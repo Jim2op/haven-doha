@@ -9,6 +9,8 @@ albedo_color = Color(0.040850326, 0.69545, 0.8122231, 1)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g4v7s"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_g4v7s"]
+
 [node name="Player" type="CharacterBody3D" unique_id=740369154]
 script = ExtResource("1_4flbx")
 
@@ -21,3 +23,13 @@ shape = SubResource("CapsuleShape3D_g4v7s")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=2137834578]
 transform = Transform3D(1, 0, 0, 0, 0.81986845, 0.572552, 0, -0.572552, 0.81986845, 0.01670742, 2.841967, 1.8514986)
+
+[node name="MeleeRange" type="ShapeCast3D" parent="." unique_id=641616855]
+transform = Transform3D(3.716801, 0, 0, 0, 2.2651815, 0, 0, 0, 3.4068158, 0, 0.31237173, -1.920795)
+shape = SubResource("BoxShape3D_g4v7s")
+target_position = Vector3(0, 0, 0)
+
+[node name="CoolDown" type="Timer" parent="." unique_id=1021889361]
+wait_time = 0.5
+
+[connection signal="timeout" from="CoolDown" to="." method="_on_cool_down_timeout"]

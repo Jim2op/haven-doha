@@ -1,11 +1,15 @@
 extends CharacterBody3D
 
+@onready var MeleeRange = $MeleeRange
+@onready var CoolDownTimer = $CoolDown
+
 
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
-
+var can_attack = true
 
 func _physics_process(delta: float) -> void:
+	add_to_group("Enemies")
 	# Add the gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
@@ -24,5 +28,21 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 		velocity.z = move_toward(velocity.z, 0, SPEED)
+	
+	if Input.is_action_just_pressed("attack") and can_attack:
+		#play here animation
+		can_attack = false
+		CoolDownTimer.start()
+		if MeleeRange.is_colliding():
+			for i in MeleeRange.get_collision_count():
+				var collider = MeleeRange.get_collider(i)
+				print(collider)
+				if collider and collider.is_in_group("Enemies"):
+						print("Damage")
+						collider.take_damage(100)
+
 
 	move_and_slide()
+
+func _on_cool_down_timeout() -> void:
+	can_attack = true

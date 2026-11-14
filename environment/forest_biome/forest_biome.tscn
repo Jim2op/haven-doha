@@ -4564,10 +4564,10 @@ Player = NodePath("../Player")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 1, -4)
 
 [node name="BigGoblin2" parent="." unique_id=316214359 instance=ExtResource("154_6y2ep")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1, 9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1, 4)
 
 [node name="BigGoblin3" parent="." unique_id=408453435 instance=ExtResource("154_6y2ep")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 86, 6, 8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 86, 6, -2)
 
 [node name="SmallGoblin" parent="." unique_id=1246593558 instance=ExtResource("155_7fiqs")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -57, 1, -12)
@@ -4579,19 +4579,31 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -91, 1, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -95, 1, -9)
 
 [node name="SmallGoblin4" parent="." unique_id=2051855186 instance=ExtResource("155_7fiqs")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -55, 7, 6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -55, 7, -6)
 
 [node name="SmallGoblin5" parent="." unique_id=2031704208 instance=ExtResource("155_7fiqs")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32, 3, 8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32, 3, 1)
+
+[node name="SmallGoblin9" parent="." unique_id=488926799 instance=ExtResource("155_7fiqs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32, 3, -4)
+
+[node name="SmallGoblin10" parent="." unique_id=1910367424 instance=ExtResource("155_7fiqs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -74, 3, -4)
+
+[node name="SmallGoblin11" parent="." unique_id=17774117 instance=ExtResource("155_7fiqs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48, 3, -4)
+
+[node name="SmallGoblin12" parent="." unique_id=1113493216 instance=ExtResource("155_7fiqs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 3, -4)
 
 [node name="SmallGoblin6" parent="." unique_id=603782560 instance=ExtResource("155_7fiqs")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 5, 8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 5, 0)
 
 [node name="SmallGoblin7" parent="." unique_id=1771249713 instance=ExtResource("155_7fiqs")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, -2)
 
 [node name="SmallGoblin8" parent="." unique_id=1627533133 instance=ExtResource("155_7fiqs")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, 1, 7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38, 1, 2)
 
 [node name="PauseMenu" parent="." unique_id=1554155583 instance=ExtResource("156_pause")]
 

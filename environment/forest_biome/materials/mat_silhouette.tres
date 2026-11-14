@@ -1,0 +1,15 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3]
+
+[ext_resource type="Shader" path="res://environment/forest_biome/shaders/voxel_palette_far.gdshader" id="1_wm4im"]
+[ext_resource type="Texture2D" path="res://environment/forest_biome/palettes/forest_dusk_palette.png" id="2_clfh1"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_wm4im")
+shader_parameter/brightness = 0.36
+shader_parameter/haze_color = Color(0.19, 0.28, 0.33, 1)
+shader_parameter/haze_density = 0.006
+shader_parameter/haze_max = 0.8
+shader_parameter/peak_clarity = 0.25
+shader_parameter/peak_height = 40.0
+shader_parameter/palette = ExtResource("2_clfh1")

@@ -3,8 +3,9 @@
 [ext_resource type="Script" uid="uid://d3x4fddiyselg" path="res://big.gd" id="1_7ljqm"]
 [ext_resource type="PackedScene" uid="uid://dj36o7k0pus77" path="res://orc.gltf" id="2_7ljqm"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_rvvka"]
-size = Vector3(2.0447388, 2.6284027, 1.0006104)
+[sub_resource type="CapsuleShape3D" id="BoxShape3D_rvvka"]
+radius = 0.6
+height = 2.63
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_g4v7s"]
 
@@ -33,7 +34,6 @@ target_position = Vector3(0, 0, 0)
 
 [node name="Timer" type="Timer" parent="." unique_id=595525774]
 wait_time = 2.0
-autostart = true
 
 [node name="Sprite3D" type="Sprite3D" parent="." unique_id=8857314]
 transform = Transform3D(0.1919004, 0, 0, 0, 0.057349008, -0.5560682, 0, 0.04857043, 0.6565714, 0, 1.8717446, -0.00916326)
@@ -41,6 +41,7 @@ texture = SubResource("ViewportTexture_g4v7s")
 
 [node name="SubViewport" type="SubViewport" parent="Sprite3D" unique_id=911876359]
 transparent_bg = true
+render_target_update_mode = 1
 
 [node name="ProgressBar" type="ProgressBar" parent="Sprite3D/SubViewport" unique_id=1978168326]
 anchors_preset = 8

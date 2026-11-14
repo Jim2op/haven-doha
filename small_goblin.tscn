@@ -3,8 +3,9 @@
 [ext_resource type="Script" uid="uid://cvjivfpb73gx2" path="res://small_goblin.gd" id="1_goblin"]
 [ext_resource type="PackedScene" uid="uid://tmw4nd8tk5jt" path="res://goblin.gltf" id="2_ydv4c"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_rvvka"]
-size = Vector3(1.5074463, 1.3285522, 0.61816406)
+[sub_resource type="CapsuleShape3D" id="BoxShape3D_rvvka"]
+radius = 0.45
+height = 1.33
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_g4v7s"]
 
@@ -41,6 +42,7 @@ texture = SubResource("ViewportTexture_g4v7s")
 
 [node name="SubViewport" type="SubViewport" parent="Sprite3D" unique_id=911876359]
 transparent_bg = true
+render_target_update_mode = 1
 
 [node name="ProgressBar" type="ProgressBar" parent="Sprite3D/SubViewport" unique_id=1978168326]
 anchors_preset = 8

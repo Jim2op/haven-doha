@@ -1,7 +1,7 @@
-[gd_resource type="Theme" format=3]
+[gd_resource type="Theme" format=3 uid="uid://balurmxy5ra70"]
 
-[ext_resource type="FontFile" path="res://fonts/CinzelDecorative-Bold.ttf" id="1_2pn01"]
-[ext_resource type="FontFile" path="res://fonts/Cinzel-Variable.ttf" id="2_tbeor"]
+[ext_resource type="FontFile" uid="uid://7xrxknjchofx" path="res://CinzelDecorative-Regular.ttf" id="1_2pn01"]
+[ext_resource type="FontFile" uid="uid://boe4jxx3dmva1" path="res://Cinzel-VariableFont_wght.ttf" id="2_tbeor"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mk0s6"]
 content_margin_left = 26.0

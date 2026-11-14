@@ -1,47 +1,75 @@
 extends CharacterBody3D
 
-## Emitted once when Health reaches 0 (used by the end screen).
 signal died
 
-@onready var MeleeRange = $MeleeRange
-@onready var CoolDownTimer = $CoolDown
-@onready var HealthBar = $Camera3D/HUD/HealthBar
+const BASE_HEALTH := 100.0
+const BASEDAMAGE := 10.0
+const SPEED := 5.0
+const JUMP_VELOCITY := 4.5
+const ATTACK_LIBRARY := "player_fx"
+const ATTACK_DURATION := 0.45
+
+@export var turn_speed := 12.0
+@export var hit_point := 0.55
+
+@onready var MeleeRange: ShapeCast3D = $MeleeRange
+@onready var CoolDownTimer: Timer = $CoolDown
+@onready var HealthBar: ProgressBar = $Camera3D/HUD/HealthBar
 @onready var model: Node3D = $knight
 @onready var anim: AnimationPlayer = _find_anim_player()
-const BASE_HEALTH = 100
-var MaxHealth = BASE_HEALTH
-var Health = BASE_HEALTH
-var HealthMultiplier = 1
-@onready var sb = StyleBoxFlat.new()
-@export var speed = 5
-const BASEDAMAGE = 10
-@export var DamageMultiplier = 1
-@export var turn_speed := 12.0
-@export var hit_point := 0.5
-var path = []
-var cur_path_idx = 0
-var threshold = .1
 
-@onready var nav = get_parent()
+var HealthMultiplier := 1.0
+var DamageMultiplier := 1.0
+var MaxHealth := BASE_HEALTH
+var Health := BASE_HEALTH
+var can_attack := true
+var is_dead := false
+var attacking := false
+var attack_time := 0.0
+var attack_length := ATTACK_DURATION
+var hit_landed := false
+var walk_anim := ""
+var attack_anim := ""
+var melee_offset := Vector3.ZERO
+var sb := StyleBoxFlat.new()
 
 
-const SPEED = 5.0
-const JUMP_VELOCITY = 4.5
-var can_attack = true
-var is_dead = false
+func _ready() -> void:
+	add_to_group("Enemies")
+
+	HealthMultiplier = PlayerStats.health_multiplier
+	DamageMultiplier = PlayerStats.damage_multiplier
+	MaxHealth = BASE_HEALTH * HealthMultiplier
+	Health = MaxHealth
+
+	HealthBar.add_theme_stylebox_override("fill", sb)
+	_update_health_bar()
+
+	melee_offset = MeleeRange.position
+	CoolDownTimer.one_shot = true
+
+	if anim:
+		walk_anim = _find_anim(["walk", "run"])
+		if walk_anim != "":
+			anim.get_animation(walk_anim).loop_mode = Animation.LOOP_LINEAR
+		attack_anim = _find_anim(["attack"])
+		if attack_anim == "":
+			attack_anim = _build_attack_animation()
+		if attack_anim != "":
+			anim.get_animation(attack_anim).loop_mode = Animation.LOOP_NONE
+			attack_length = anim.get_animation(attack_anim).length
+
 
 func _physics_process(delta: float) -> void:
-	add_to_group("Enemies")
-	# Add the gravity.
+	if is_dead:
+		return
+
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 
-	# Handle jump.
 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
 	var input_dir := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
@@ -52,7 +80,7 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, SPEED)
 
 	if input_dir:
-		var yaw := atan2(-input_dir.x, -input_dir.y)
+		var yaw := atan2(input_dir.x, input_dir.y)
 		model.rotation.y = lerp_angle(model.rotation.y, yaw, turn_speed * delta)
 	MeleeRange.position = melee_offset.rotated(Vector3.UP, model.rotation.y)
 	MeleeRange.rotation.y = model.rotation.y
@@ -66,37 +94,20 @@ func _physics_process(delta: float) -> void:
 		_update_attack(delta)
 
 	_update_animation()
-
-	#Health/HealthBar System
-	if Health >= MaxHealth:
-		Health = MaxHealth
-	MaxHealth = BASE_HEALTH * HealthMultiplier
-
-	HealthBar.max_value = MaxHealth
-	HealthBar.value = Health
-
-	if Health >= 51:
-		sb.bg_color = Color("3f8f5aff") # emerald
-	elif Health <= 51 and Health >= 25:
-		sb.bg_color = Color("c08a2eff") # antique amber
-	elif Health <=26:
-		sb.bg_color = Color("9e2a22ff") # dark crimson
-		
-
 	move_and_slide()
 
-func _ready():
-	HealthBar.add_theme_stylebox_override("fill", sb)
-	melee_offset = MeleeRange.position
 
-	if anim:
-		walk_anim = _find_anim(["walk", "run"])
-		attack_anim = _find_anim(["attack"])
-		if walk_anim != "":
-			anim.get_animation(walk_anim).loop_mode = Animation.LOOP_LINEAR
-		if attack_anim != "":
-			anim.get_animation(attack_anim).loop_mode = Animation.LOOP_NONE
-			attack_length = anim.get_animation(attack_anim).length
+func _update_health_bar() -> void:
+	HealthBar.max_value = MaxHealth
+	HealthBar.value = Health
+	var percent := Health / MaxHealth * 100.0
+	if percent > 50.0:
+		sb.bg_color = Color("3f8f5aff")
+	elif percent > 25.0:
+		sb.bg_color = Color("c08a2eff")
+	else:
+		sb.bg_color = Color("9e2a22ff")
+
 
 func _start_attack() -> void:
 	attacking = true
@@ -106,33 +117,76 @@ func _start_attack() -> void:
 		anim.stop()
 		anim.play(attack_anim)
 
+
 func _update_attack(delta: float) -> void:
 	attack_time += delta
 	if not hit_landed and attack_time >= attack_length * hit_point:
 		hit_landed = true
 		MeleeRange.force_shapecast_update()
-		if MeleeRange.is_colliding():
-			for i in MeleeRange.get_collision_count():
-				var collider = MeleeRange.get_collider(i)
-				if collider and collider != self and collider.is_in_group("Enemies"):
-					collider.take_damage(BASEDAMAGE*DamageMultiplier)
+		var hits := []
+		for i in MeleeRange.get_collision_count():
+			var collider = MeleeRange.get_collider(i)
+			if collider and collider != self and not hits.has(collider) and collider.is_in_group("Enemies") and collider.has_method("take_damage"):
+				hits.append(collider)
+		for enemy in hits:
+			enemy.take_damage(BASEDAMAGE * DamageMultiplier)
 	if attack_time >= attack_length:
 		attacking = false
+
 
 func _update_animation() -> void:
 	if anim == null or attacking:
 		return
-	if Vector2(velocity.x, velocity.z).length() > 0.1:
+	if Vector2(velocity.x, velocity.z).length_squared() > 0.01:
 		if walk_anim != "" and anim.current_animation != walk_anim:
 			anim.play(walk_anim)
 	elif anim.is_playing():
 		anim.stop()
+
+
+func _build_attack_animation() -> String:
+	var a := Animation.new()
+	a.length = ATTACK_DURATION
+	a.loop_mode = Animation.LOOP_NONE
+	var times := [0.0, 0.12, 0.26, ATTACK_DURATION]
+	var tracks := {
+		"arm_upper_left_bone": [Vector3.RIGHT, [0.0, -150.0, -50.0, 0.0]],
+		"arm_lower_left_bone": [Vector3.RIGHT, [0.0, -30.0, 0.0, 0.0]],
+		"arm_upper_right_bone": [Vector3.RIGHT, [0.0, -25.0, 15.0, 0.0]],
+		"torso_bone": [Vector3.UP, [0.0, 25.0, -20.0, 0.0]],
+	}
+	for bone_name in tracks:
+		var path := _anim_path_to(bone_name)
+		if path.is_empty():
+			continue
+		var axis: Vector3 = tracks[bone_name][0]
+		var angles: Array = tracks[bone_name][1]
+		var t := a.add_track(Animation.TYPE_ROTATION_3D)
+		a.track_set_path(t, path)
+		for k in times.size():
+			a.rotation_track_insert_key(t, times[k], Quaternion(axis, deg_to_rad(angles[k])))
+	if a.get_track_count() == 0:
+		return ""
+	var lib := AnimationLibrary.new()
+	lib.add_animation("attack", a)
+	anim.add_animation_library(ATTACK_LIBRARY, lib)
+	return ATTACK_LIBRARY + "/attack"
+
+
+func _anim_path_to(node_name: String) -> NodePath:
+	var node := model.find_child(node_name, true, false)
+	var root := anim.get_node_or_null(anim.root_node)
+	if node == null or root == null:
+		return NodePath()
+	return root.get_path_to(node)
+
 
 func _find_anim_player() -> AnimationPlayer:
 	for p in find_children("*", "AnimationPlayer", true, false):
 		if p.get_animation_list().size() > 0:
 			return p
 	return null
+
 
 func _find_anim(keys: Array) -> String:
 	for n in anim.get_animation_list():
@@ -141,13 +195,16 @@ func _find_anim(keys: Array) -> String:
 				return n
 	return ""
 
-func take_damage(amt):
-	Health -= amt
-	print(Health)
-	if Health <= 0 and not is_dead:
+
+func take_damage(amt) -> void:
+	if is_dead:
+		return
+	Health = maxf(Health - amt, 0.0)
+	_update_health_bar()
+	if Health <= 0.0:
 		is_dead = true
-		HealthBar.value = 0 # the game pauses on death, so refresh the bar now
 		died.emit()
+
 
 func _on_cool_down_timeout() -> void:
 	can_attack = true

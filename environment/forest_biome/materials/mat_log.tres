@@ -1,0 +1,23 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3]
+
+[ext_resource type="Shader" path="res://environment/forest_biome/shaders/voxel_palette.gdshader" id="1_8olxo"]
+[ext_resource type="Texture2D" path="res://environment/forest_biome/palettes/forest_deadwood_palette.png" id="2_4wcv0"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_8olxo")
+shader_parameter/tint = Color(1, 1, 1, 1)
+shader_parameter/brightness = 1.0
+shader_parameter/value_variation = 0.1
+shader_parameter/hue_variation = 0.05
+shader_parameter/ao_height = 0.6
+shader_parameter/ao_base = 0.0
+shader_parameter/ao_strength = 0.0
+shader_parameter/sway_amount = 0.0
+shader_parameter/sway_start = 0.2
+shader_parameter/sway_speed = 0.9
+shader_parameter/emission_color = Color(0, 0, 0, 1)
+shader_parameter/emission_energy = 0.0
+shader_parameter/roughness_value = 1.0
+shader_parameter/specular_value = 0.2
+shader_parameter/palette = ExtResource("2_4wcv0")

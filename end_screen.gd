@@ -13,6 +13,9 @@ const TITLE_SCENE := "res://title_screen.tscn"
 @onready var message: Label = %Message
 @onready var retry_button: Button = %RetryButton
 @onready var title_button: Button = %TitleButton
+@onready var upgrades: HBoxContainer = %Upgrades
+@onready var health_upgrade_button: Button = %HealthUpgradeButton
+@onready var damage_upgrade_button: Button = %DamageUpgradeButton
 
 var _player: Node
 var _finished := false
@@ -21,8 +24,11 @@ var _finished := false
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	root_control.hide()
+	upgrades.hide()
 	retry_button.pressed.connect(_on_retry_pressed)
 	title_button.pressed.connect(_on_title_pressed)
+	health_upgrade_button.pressed.connect(_on_health_upgrade_pressed)
+	damage_upgrade_button.pressed.connect(_on_damage_upgrade_pressed)
 	_player = get_node_or_null(player_path)
 	if _player and _player.has_signal("died"):
 		_player.died.connect(_on_player_died)
@@ -43,10 +49,10 @@ func _check_victory() -> void:
 
 
 func _on_player_died() -> void:
-	_show("You Have Fallen", "The ancient wood claims another soul.", "Rise Again")
+	_show("You Have Fallen", "The ancient wood claims another soul. Choose a boon and rise again.", "Rise Again", true)
 
 
-func _show(title: String, text: String, retry_text: String) -> void:
+func _show(title: String, text: String, retry_text: String, offer_upgrades := false) -> void:
 	if _finished:
 		return
 	_finished = true
@@ -60,7 +66,26 @@ func _show(title: String, text: String, retry_text: String) -> void:
 	root_control.show()
 	root_control.modulate.a = 0.0
 	create_tween().tween_property(root_control, "modulate:a", 1.0, 0.6)
-	retry_button.grab_focus()
+	if offer_upgrades:
+		health_upgrade_button.text = "Vitality  Health x%.2f -> x%.2f" % [PlayerStats.health_multiplier, PlayerStats.health_multiplier + PlayerStats.HEALTH_STEP]
+		damage_upgrade_button.text = "Might  Damage x%.2f -> x%.2f" % [PlayerStats.damage_multiplier, PlayerStats.damage_multiplier + PlayerStats.DAMAGE_STEP]
+		upgrades.show()
+		retry_button.hide()
+		health_upgrade_button.grab_focus()
+	else:
+		upgrades.hide()
+		retry_button.show()
+		retry_button.grab_focus()
+
+
+func _on_health_upgrade_pressed() -> void:
+	PlayerStats.upgrade_health()
+	_on_retry_pressed()
+
+
+func _on_damage_upgrade_pressed() -> void:
+	PlayerStats.upgrade_damage()
+	_on_retry_pressed()
 
 
 func _on_retry_pressed() -> void:

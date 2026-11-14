@@ -57,6 +57,25 @@ text = "The ancient wood claims another soul."
 horizontal_alignment = 1
 autowrap_mode = 3
 
+[node name="Upgrades" type="HBoxContainer" parent="EndRoot/Center/Panel/VBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 24
+
+[node name="HealthUpgradeButton" type="Button" parent="EndRoot/Center/Panel/VBox/Upgrades"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+text = "Vitality"
+
+[node name="DamageUpgradeButton" type="Button" parent="EndRoot/Center/Panel/VBox/Upgrades"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+text = "Might"
+
 [node name="Buttons" type="HBoxContainer" parent="EndRoot/Center/Panel/VBox"]
 layout_mode = 2
 alignment = 1

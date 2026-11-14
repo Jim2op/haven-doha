@@ -2,9 +2,15 @@
 
 [ext_resource type="Script" uid="uid://duvj0vl4r5uiv" path="res://player.gd" id="1_4flbx"]
 [ext_resource type="PackedScene" uid="uid://b10366sbe8fhd" path="res://knight.glb" id="2_onrkg"]
-[ext_resource type="Theme" path="res://ui_theme.tres" id="3_uitheme"]
+[ext_resource type="Texture2D" uid="uid://ckqleuoab4pm4" path="res://gem.png" id="3_hqtel"]
+[ext_resource type="FontFile" uid="uid://7xrxknjchofx" path="res://CinzelDecorative-Regular.ttf" id="3_sweqy"]
+[ext_resource type="Theme" uid="uid://balurmxy5ra70" path="res://ui_theme.tres" id="3_uitheme"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g4v7s"]
+radius = 0.001
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sweqy"]
+bg_color = Color(0.07058824, 0.05882353, 0.043137256, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_g4v7s"]
 
@@ -28,7 +34,7 @@ theme = ExtResource("3_uitheme")
 step = 1.0
 show_percentage = false
 
-[node name="Caption" type="Label" parent="Camera3D/HUD/HealthBar"]
+[node name="Caption" type="Label" parent="Camera3D/HUD/HealthBar" unique_id=452566948]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -40,8 +46,33 @@ text = "Vitality"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="Label" type="Label" parent="Camera3D/HUD" unique_id=500848429]
+offset_left = 1488.0
+offset_top = 32.0
+offset_right = 1768.0
+offset_bottom = 164.0
+theme_override_colors/font_color = Color(0.90924674, 0.84653795, 0.68192714, 1)
+theme_override_fonts/font = ExtResource("3_sweqy")
+theme_override_font_sizes/font_size = 97
+theme_override_styles/normal = SubResource("StyleBoxFlat_sweqy")
+text = "100"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ColorRect" type="ColorRect" parent="Camera3D/HUD" unique_id=2103827510]
+offset_left = 1768.0
+offset_top = 32.0
+offset_right = 1895.0
+offset_bottom = 164.0
+color = Color(0.07058824, 0.05882353, 0.043137256, 1)
+
+[node name="Gem" type="Sprite2D" parent="Camera3D/HUD" unique_id=582899797]
+position = Vector2(1832, 99.00001)
+scale = Vector2(0.21875007, 0.23046878)
+texture = ExtResource("3_hqtel")
+
 [node name="MeleeRange" type="ShapeCast3D" parent="." unique_id=641616855]
-transform = Transform3D(3.716801, 0, 0, 0, 2.2651815, 0, 0, 0, 3.4068158, 0, 0.31237173, -1.920795)
+transform = Transform3D(3.716801, 0, 0, 0, 2.2651815, 0, 0, 0, 4.63327, 0, 0.31237173, 0.079205036)
 shape = SubResource("BoxShape3D_g4v7s")
 target_position = Vector3(0, 0, 0)
 

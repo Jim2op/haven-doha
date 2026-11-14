@@ -1,0 +1,95 @@
+# Mystic Voxel Forest – biome module (Godot 4.3+)
+
+A self-contained, drop-in 2.5D dark-fantasy forest. Built from three asset packs that are only read, never modified:
+
+| Pack | Folder | Role |
+|---|---|---|
+| Kytric "Voxel Path and Terrain" (CC0) | `assets/voxel_path_terrain/` | Terrain tiles, paths, pond, cliffs and cave, stones, bones, fallen trees, small grass tufts |
+| Tree & Bush pack v1 (MagicaVoxel OBJ) | `assets/tree_bush_pack/` | **Primary trees and bushes**: plain `tree1-3` / `bush1-3`, `blue_*` accents in spirit areas, `purple_*` in the blight grove |
+| RuinsGLB | `assets/ruins_glb/` | Walls, gate, pillars, stairs, stair-bridge, mossy blocks, fences (graveyard railings), `Slope` posts (headstones), `Altar` (obelisks), skulls, wall-light sconces, hanging and ground moss |
+
+Not used, on purpose: tree-pack `red/orange/yellow/pink_*` variants (cheerful fruit specks clash with the mood); Ruins coins and chests
+(they read as collectibles); `*des` destructible walls (physics-fracture duplicates); `Vase` (terracotta red clashed); `Skely` rigged
+skeleton **characters** (enemies, not environment; not copied into the project).
+
+## Drop it into your game
+
+1. Copy `environment/forest_biome/` **and** `assets/voxel_path_terrain/` into your project (same paths).
+2. Open your level scene and **instance** `res://environment/forest_biome/forest_biome.tscn` under the level root.
+3. Put your player on `ForestBiome/Markers/PlayerSpawn` (‑88, 0, 1). The walkable floor is **y = 0**.
+4. If your level already has its own `WorldEnvironment` or sun, delete (or hide) `ForestBiome/Atmosphere/WorldEnvironment`,
+   `MoonKey` and `MoonRim` to avoid doubling up. Otherwise keep them; they are the biome's look.
+
+Nothing in your player, enemies, spawning, combat or collectible code is touched. The biome contains **no gameplay scripts**.
+The only runtime script is `scripts/parallax_follow_3d.gd`, which reads whatever `Camera3D` is current.
+
+## Layout (world metres, 1 tile = 12.8 m, path ≈ 2 m wide, sized for a ~1.8 m character)
+
+| Zone (left → right) | X range | Purpose |
+|---|---|---|
+| Hollow Gate | −104 … −70 | Spawn. Cliff wall with an ember-lit cave; the path emerges from it. |
+| Whispering Path | −70 … −35 | Winding path, dense groves behind, first vista window onto the valley. |
+| Ruined Outer Gate | −108 … −90 | Arch and broken wall stubs in front of the cave; the path from the cave passes under it. |
+| Forgotten Graveyard | −70 … −44 | Behind the lane: broken railings, ~25 leaning headstones, two obelisks, a ruined chapel wall with a lantern and ghost light, wisps. |
+| Spirit Shrine (arena) | −35 … 0 | Clearing with 5 glowing rune monoliths at the back, flanked by two old temple columns; the front half is kept empty for combat. Elder Tree behind. |
+| Drowned Glade | 0 … 55 | Black-mirror pond with a sunken dead tree, a stair-bridge sinking into the water and wall stubs on the far shore; the pond is an obstacle. |
+| Sunken Temple (background) | 48 … 74 | Colonnade on a mossy plinth with stairs and a broken back wall, seen through a vista gap behind the Bone Hollow. |
+| Bone Hollow (arena) | 55 … 85 | Giant ribcage under violet blighted trees. |
+| Sealed Crypt (dungeon entrance) | 78 … 102 | The path ends at a torch-lit, sealed gate set into a ruined facade, with guardian columns, skulls and drifting embers. |
+
+**Lane (walkable belt):** X −104 … 104, Z −16 … 6 (`Markers/LaneMin`, `Markers/LaneMax`). Collision lives in
+`Collision/ForestCollision` (layer 1): the floor, four invisible lane walls, and obstacles (trunks at the lane edge, monoliths, pond,
+ribcage, fallen trees). Delete or edit that node if your level already handles bounds.
+
+## Depth layers
+
+| Layer | Node | Notes |
+|---|---|---|
+| Foreground | `Vegetation/Foreground` | Dark low ferns, rocks, saplings at z 10–16. Kept under the camera→lane sight line so feet are never hidden. |
+| Midground / playfield | `Terrain`, `Vegetation/Playfield`, `Landmarks` | In the lane, anything in front of the path is capped at ~0.6 m. |
+| Background | `Vegetation/ForestEdge`, `Background/Valley` | Clustered groves with vista windows, then a fog-filled valley canopy 13 m below the plateau. |
+| Far background | `FarBackground/Ridges` (parallax 0.35), `FarBackground/Mountains` (parallax 0.8) | Terraced forested hills and stepped voxel mountains with their own distance haze. |
+| Sky | `forest_environment.tres` | Custom night sky shader: moon, halo, stars. |
+
+## Expected camera
+
+The module was composed for a fixed-pitch side-scrolling 2.5D camera: offset about (0, 5, 16) from the player,
+pitch −8°, FOV 42° (see `res://preview/preview_camera_rig.gd`). Similar cameras work. The far layers follow the current camera's X.
+
+## Editing
+
+* **Hand-placed pieces** (`Landmarks/*`, lights, mist cards, particles, light shaft) are ordinary nodes: move them in the editor.
+* **Bulk dressing** (ground tiles, trees, grass, rocks) is batched into chunked `MultiMeshInstance3D`s and is regenerated by the builder.
+  To change the layout, edit the authored data at the top of `tools/forest_biome_builder.gd` (`PATH_CELLS`, `CLEARINGS`, `PONDS`,
+  `VISTA_WINDOWS`, `BELT_MIN/MAX`) and rebuild:
+  * Editor: open `tools/build_forest_biome_editor.gd`, then **File ▸ Run**.
+  * CLI: `godot --path . -s res://environment/forest_biome/tools/build_forest_biome_cli.gd`
+    (run with a display or Xvfb, not `--headless`: the dummy renderer drops MultiMesh buffers).
+  Rebuilding overwrites `forest_biome.tscn`, so editor-side changes to the biome scene itself are lost. Keep level-specific
+  edits in your own level scene, as overrides on the instance.
+* **Colour grading:** `palettes/*.png` are derived from the original palette by `tools/make_palettes.py`.
+  Per-material look (brightness, variation, fake AO, wind, emission) is in `materials/mat_*.tres` (shader `shaders/voxel_palette.gdshader`).
+
+## Performance (measured, 1920×1080)
+
+About 185–270 draw calls (shadow passes included), ~0.5–0.65 M triangles per frame, about 99 MB of VRAM.
+* Repeated assets use `MultiMeshInstance3D`, chunked every 48 m on X so off-screen chunks are culled and far chunks use mesh LODs.
+* One shadowed directional light. Background, valley and far layers cast no shadows.
+* Six omni lights without shadows. Six `GPUParticles3D` emitters (~284 particles total, voxel-cube motes).
+* Background ruins (temple, crypt, bridge, graveyard props) skip the shadow pass. Ground rows the camera never sees were removed.
+* Mist and light shafts are single unshaded quads.
+
+## HTML5 / itch.io
+
+* The project uses the **Compatibility** renderer (required for Godot 4.3 Web exports; WebGL 2).
+* All textures are tiny and imported **lossless** with `detect_3d/compress_to=0`, so the palette-based voxel textures are never
+  block-compressed (S3TC/ETC2 would smear a 256×1 palette). Keep the `.import` files when copying assets.
+* `export_presets.cfg` has a **Web** preset: thread support off (no SharedArrayBuffer/COOP headers needed on itch.io), and only the
+  main scene's dependencies are exported (about 3 MB `.pck`). Web-only overrides: 2048 shadow map, lighter shadow filter.
+* Export from the editor or with a display (`godot --path . --export-release "Web" build/web/index.html`); avoid `--headless`
+  (see the MultiMesh note above). On itch.io: upload a zip of `build/web/` with `index.html` at its root, and tick "This file will be played in the browser".
+
+## Renderer notes
+
+Verified in the Compatibility renderer, on desktop OpenGL and in a WebGL 2 browser build. SSAO in the environment only applies if you switch to Forward+.
+Volumetric fog is not used: depth/height fog, mist cards and the far-layer haze shader give the same layering on every renderer.

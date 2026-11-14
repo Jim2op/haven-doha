@@ -1,12 +1,17 @@
 extends CharacterBody3D
 
-const DEF_HEALTH = 100
 const DEF_DAMAGE = 10
 const SPEED = 4.0
-var health = DEF_HEALTH
+var BASE_HEALTH = 75 # starting health before the multiplier
+@export var HealthMultiplier = 1
+var MaxHealth = BASE_HEALTH
+var health = BASE_HEALTH
 var damage = DEF_DAMAGE
+@export var damMultiplier = 1
 var can_hit = true
 
+var sb := StyleBoxFlat.new()
+@onready var HealthBar: ProgressBar = $Sprite3D/SubViewport/ProgressBar
 @onready var AttackRange = $ShapeCast3D
 @onready var cool = $Timer
 @export var target: Node3D
@@ -16,11 +21,18 @@ var can_hit = true
 func _ready() -> void:
 	if target == null:
 		target = get_tree().current_scene.get_node_or_null("Player")
-	
-	# Ensure the timer doesn't auto-loop and connect its signal
+
 	cool.one_shot = true
 	if not cool.timeout.is_connected(_on_timer_timeout):
 		cool.timeout.connect(_on_timer_timeout)
+
+	HealthBar.add_theme_stylebox_override("fill", sb)
+
+	# Start health is 75, scaled by HealthMultiplier (e.g. 2 -> 150), and the goblin starts full.
+	MaxHealth = BASE_HEALTH * HealthMultiplier
+	health = MaxHealth
+	HealthBar.max_value = MaxHealth
+	update_health_bar()
 
 
 func _physics_process(delta: float) -> void:
@@ -28,7 +40,7 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 
-	if health <= 0:
+	if health <= 1:
 		queue_free()
 		return
 
@@ -62,10 +74,23 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 
+func update_health_bar() -> void:
+	HealthBar.value = health
+
+
+	var percent: float = float(health) / MaxHealth * 100.0
+	if percent > 50:
+		sb.bg_color = Color("00d300ff")
+	elif percent > 25:
+		sb.bg_color = Color("ff8600ff")
+	else:
+		sb.bg_color = Color("ff0000ff")
+
+
 func take_damage(amt):
-	health -= amt
+	health = clamp(health - amt, 0, MaxHealth)
+	update_health_bar()
 
 
 func _on_timer_timeout() -> void:
-	# Reset the attack when the Timer node finishes
 	can_hit = true

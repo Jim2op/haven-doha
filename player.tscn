@@ -5,6 +5,8 @@
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g4v7s"]
 
+[sub_resource type="Theme" id="Theme_g4v7s"]
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_g4v7s"]
 
 [node name="Player" type="CharacterBody3D" unique_id=740369154]
@@ -13,13 +15,22 @@ script = ExtResource("1_4flbx")
 [node name="knight" parent="." unique_id=415018791 instance=ExtResource("2_onrkg")]
 transform = Transform3D(-0.959, 0, -1.8889575e-07, 0, 1, 0, 1.4480497e-07, 0, -1.251, 0, -0.981433, 0.018153787)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=2008335598]
-
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1756298855]
 shape = SubResource("CapsuleShape3D_g4v7s")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=2137834578]
-transform = Transform3D(1, 0, 0, 0, 0.81986845, 0.572552, 0, -0.572552, 0.81986845, 0.01670742, 2.841967, 1.8514986)
+transform = Transform3D(1, 0, 0, 0, 0.81986845, 0.572552, 0, -0.572552, 0.81986845, 0.01670742, 2.89963, 1.9873018)
+
+[node name="HUD" type="CanvasLayer" parent="Camera3D" unique_id=837750886]
+
+[node name="HealthBar" type="ProgressBar" parent="Camera3D/HUD" unique_id=1759993232]
+offset_left = 34.0
+offset_top = 36.0
+offset_right = 585.0
+offset_bottom = 170.0
+theme = SubResource("Theme_g4v7s")
+step = 1.0
+show_percentage = false
 
 [node name="MeleeRange" type="ShapeCast3D" parent="." unique_id=641616855]
 transform = Transform3D(3.716801, 0, 0, 0, 2.2651815, 0, 0, 0, 3.4068158, 0, 0.31237173, -1.920795)
@@ -27,6 +38,5 @@ shape = SubResource("BoxShape3D_g4v7s")
 target_position = Vector3(0, 0, 0)
 
 [node name="CoolDown" type="Timer" parent="." unique_id=1021889361]
-wait_time = 0.5
 
 [connection signal="timeout" from="CoolDown" to="." method="_on_cool_down_timeout"]

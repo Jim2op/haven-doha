@@ -35,7 +35,6 @@ shadow_enabled = true
 
 [node name="Player" parent="." unique_id=740369154 instance=ExtResource("1_gojnm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3273401, 0.80049276, -0.788723)
-speed = 5
 
 [node name="PunchingBag" parent="." unique_id=1256021143 instance=ExtResource("3_f7g2b")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.020606, 0.5996094, 1.345068)
@@ -51,6 +50,7 @@ material = SubResource("StandardMaterial3D_1c2mv")
 
 [node name="Box" type="CSGBox3D" parent="NavigationRegion3D" unique_id=745454507]
 transform = Transform3D(3.4719534, 0, 0, 0, 4.0353436, 0, 0, 0, 3.3516212, 0, 1.6660577, -11.745779)
+use_collision = true
 
 [node name="SmallGoblin" parent="." unique_id=1899729092 instance=ExtResource("4_4ptq8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7503428, 1.3603972, -4.632272)

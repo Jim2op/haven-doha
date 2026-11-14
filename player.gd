@@ -2,13 +2,15 @@ extends CharacterBody3D
 
 @onready var MeleeRange = $MeleeRange
 @onready var CoolDownTimer = $CoolDown
+@onready var HealthBar = $Camera3D/HUD/HealthBar
 const BASE_HEALTH = 100
 var MaxHealth = BASE_HEALTH
 var Health = BASE_HEALTH
 var HealthMultiplier = 1
-
+@onready var sb = StyleBoxFlat.new()
 @export var speed = 5
-
+const BASEDAMAGE = 10
+@export var DamageMultiplier = 1
 var path = []
 var cur_path_idx = 0
 var threshold = .1
@@ -49,13 +51,30 @@ func _physics_process(delta: float) -> void:
 			for i in MeleeRange.get_collision_count():
 				var collider = MeleeRange.get_collider(i)
 				if collider and collider.is_in_group("Enemies"):
-						collider.take_damage(100)
+						collider.take_damage(BASEDAMAGE*DamageMultiplier)
 
-	#Health System
+	#Health/HealthBar System
 	if Health >= MaxHealth:
 		Health = MaxHealth
 	MaxHealth = BASE_HEALTH * HealthMultiplier
+	
+	HealthBar.max_value = MaxHealth
+	HealthBar.value = Health 
+	
+	if Health >= 51:
+		sb.bg_color = Color("00d300ff")
+	elif Health <= 51 and Health >= 25:
+		sb.bg_color = Color("ff8600ff") 
+	elif Health <=26:
+		sb.bg_color = Color("ff0000ff") 
+		
+
+	
 	move_and_slide()
+
+func _ready():
+	HealthBar.add_theme_stylebox_override("fill", sb)
+
 func take_damage(amt):
 	Health -= amt
 	print(Health)

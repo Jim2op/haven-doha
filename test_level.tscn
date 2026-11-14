@@ -4,6 +4,8 @@
 [ext_resource type="PackedScene" uid="uid://d2qc5t8ghsynl" path="res://player.tscn" id="1_gojnm"]
 [ext_resource type="PackedScene" uid="uid://y5dw3nxl84ba" path="res://punching_bag.tscn" id="3_f7g2b"]
 [ext_resource type="PackedScene" uid="uid://6fwlku017014" path="res://small_goblin.tscn" id="4_4ptq8"]
+[ext_resource type="PackedScene" path="res://pause_menu.tscn" id="5_pause"]
+[ext_resource type="PackedScene" path="res://end_screen.tscn" id="6_end"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1c2mv"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -54,3 +56,7 @@ use_collision = true
 
 [node name="SmallGoblin" parent="." unique_id=1899729092 instance=ExtResource("4_4ptq8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7503428, 1.3603972, -4.632272)
+
+[node name="PauseMenu" parent="." instance=ExtResource("5_pause")]
+
+[node name="EndScreen" parent="." instance=ExtResource("6_end")]

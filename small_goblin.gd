@@ -80,11 +80,11 @@ func update_health_bar() -> void:
 
 	var percent: float = float(health) / MaxHealth * 100.0
 	if percent > 50:
-		sb.bg_color = Color("00d300ff")
+		sb.bg_color = Color("3f8f5aff") # emerald
 	elif percent > 25:
-		sb.bg_color = Color("ff8600ff")
+		sb.bg_color = Color("c08a2eff") # antique amber
 	else:
-		sb.bg_color = Color("ff0000ff")
+		sb.bg_color = Color("9e2a22ff") # dark crimson
 
 
 func take_damage(amt):

@@ -2,10 +2,9 @@
 
 [ext_resource type="Script" uid="uid://duvj0vl4r5uiv" path="res://player.gd" id="1_4flbx"]
 [ext_resource type="PackedScene" uid="uid://b10366sbe8fhd" path="res://knight.glb" id="2_onrkg"]
+[ext_resource type="Theme" path="res://ui_theme.tres" id="3_uitheme"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g4v7s"]
-
-[sub_resource type="Theme" id="Theme_g4v7s"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_g4v7s"]
 
@@ -28,9 +27,21 @@ offset_left = 34.0
 offset_top = 36.0
 offset_right = 585.0
 offset_bottom = 170.0
-theme = SubResource("Theme_g4v7s")
+theme = ExtResource("3_uitheme")
 step = 1.0
 show_percentage = false
+
+[node name="Caption" type="Label" parent="Camera3D/HUD/HealthBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 34
+text = "Vitality"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="MeleeRange" type="ShapeCast3D" parent="." unique_id=641616855]
 transform = Transform3D(3.716801, 0, 0, 0, 2.2651815, 0, 0, 0, 3.4068158, 0, 0.31237173, -1.920795)

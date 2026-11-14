@@ -1,7 +1,4 @@
-[gd_resource type="Theme" format=3 uid="uid://balurmxy5ra70"]
-
-[ext_resource type="FontFile" uid="uid://7xrxknjchofx" path="res://CinzelDecorative-Regular.ttf" id="1_2pn01"]
-[ext_resource type="FontFile" uid="uid://boe4jxx3dmva1" path="res://Cinzel-VariableFont_wght.ttf" id="2_tbeor"]
+[gd_resource type="Theme" format=3 uid="uid://72wla8ynwgrh"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mk0s6"]
 content_margin_left = 26.0
@@ -147,6 +144,11 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
+[sub_resource type="FontVariation" id="FontVariation_yuc8m"]
+variation_opentype = {
+2003265652: 600
+}
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2v547"]
 content_margin_left = 48.0
 content_margin_top = 36.0
@@ -199,12 +201,6 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
-[sub_resource type="FontVariation" id="FontVariation_yuc8m"]
-base_font = ExtResource("2_tbeor")
-variation_opentype = {
-2003265652: 600
-}
-
 [resource]
 default_font = SubResource("FontVariation_yuc8m")
 default_font_size = 28
@@ -232,7 +228,7 @@ HeadingLabel/colors/font_color = Color(0.72156864, 0.57254905, 0.24705882, 1)
 HeadingLabel/colors/font_outline_color = Color(0.101960786, 0.07058824, 0.039215688, 1)
 HeadingLabel/constants/outline_size = 8
 HeadingLabel/font_sizes/font_size = 54
-HeadingLabel/fonts/font = ExtResource("1_2pn01")
+HeadingLabel/fonts/font = SubResource("FontVariation_yuc8m")
 Label/colors/font_color = Color(0.9019608, 0.8352941, 0.65882355, 1)
 Label/colors/font_shadow_color = Color(0, 0, 0, 0.7)
 Label/constants/shadow_offset_x = 2
@@ -249,4 +245,4 @@ TitleLabel/colors/font_color = Color(0.72156864, 0.57254905, 0.24705882, 1)
 TitleLabel/colors/font_outline_color = Color(0.101960786, 0.07058824, 0.039215688, 1)
 TitleLabel/constants/outline_size = 10
 TitleLabel/font_sizes/font_size = 96
-TitleLabel/fonts/font = ExtResource("1_2pn01")
+TitleLabel/fonts/font = SubResource("FontVariation_yuc8m")

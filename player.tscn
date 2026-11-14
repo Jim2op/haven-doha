@@ -4,13 +4,18 @@
 [ext_resource type="PackedScene" uid="uid://b10366sbe8fhd" path="res://knight.glb" id="2_onrkg"]
 [ext_resource type="Texture2D" uid="uid://ckqleuoab4pm4" path="res://gem.png" id="3_hqtel"]
 [ext_resource type="FontFile" uid="uid://7xrxknjchofx" path="res://CinzelDecorative-Regular.ttf" id="3_sweqy"]
-[ext_resource type="Theme" uid="uid://balurmxy5ra70" path="res://ui_theme.tres" id="3_uitheme"]
+[ext_resource type="Theme" uid="uid://72wla8ynwgrh" path="res://ui_theme.tres" id="3_uitheme"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g4v7s"]
 radius = 0.001
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sweqy"]
 bg_color = Color(0.07058824, 0.05882353, 0.043137256, 1)
+border_width_left = 7
+border_width_top = 7
+border_width_right = 7
+border_width_bottom = 7
+border_color = Color(0.5411765, 0.41568628, 0.18431373, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_g4v7s"]
 
@@ -21,7 +26,7 @@ script = ExtResource("1_4flbx")
 shape = SubResource("CapsuleShape3D_g4v7s")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=2137834578]
-transform = Transform3D(1, 0, 0, 0, 0.81986845, 0.572552, 0, -0.572552, 0.81986845, 0.01670742, 2.89963, 1.9873018)
+transform = Transform3D(1, 0, 0, 0, 0.81986845, 0.572552, 0, -0.572552, 0.81986845, 0.01670742, 5.89963, 3.9873018)
 
 [node name="HUD" type="CanvasLayer" parent="Camera3D" unique_id=837750886]
 
@@ -72,7 +77,7 @@ scale = Vector2(0.21875007, 0.23046878)
 texture = ExtResource("3_hqtel")
 
 [node name="MeleeRange" type="ShapeCast3D" parent="." unique_id=641616855]
-transform = Transform3D(3.716801, 0, 0, 0, 2.2651815, 0, 0, 0, 4.63327, 0, 0.31237173, 0.079205036)
+transform = Transform3D(8.176962, 0, 0, 0, 2.2651815, 0, 0, 0, 6.9499044, 0, 0.31237173, 0.079205036)
 shape = SubResource("BoxShape3D_g4v7s")
 target_position = Vector3(0, 0, 0)
 

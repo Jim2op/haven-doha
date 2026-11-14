@@ -1,7 +1,7 @@
 extends Control
 ## Title screen: the game's entry scene. "Play" loads the existing level unchanged.
 
-const LEVEL_SCENE := "res://test_level.tscn"
+const LEVEL_SCENE := "res://environment/forest_biome/forest_biome.tscn"
 
 @onready var menu: VBoxContainer = %Menu
 @onready var play_button: Button = %PlayButton

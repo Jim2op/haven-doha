@@ -17,7 +17,8 @@ const ATTACK_DURATION := 0.45
 @onready var HealthBar: ProgressBar = $Camera3D/HUD/HealthBar
 @onready var model: Node3D = $knight
 @onready var anim: AnimationPlayer = _find_anim_player()
-
+@onready var tokenbar = $Camera3D/HUD/Label
+@onready var tokens = PlayerStats.tokens
 var HealthMultiplier := 1.0
 var DamageMultiplier := 1.0
 var MaxHealth := BASE_HEALTH
@@ -63,7 +64,9 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if is_dead:
 		return
-
+	
+	tokenbar.text = str(tokens)
+	
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 

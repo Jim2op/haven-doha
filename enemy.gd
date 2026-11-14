@@ -11,6 +11,7 @@ extends CharacterBody3D
 @export var separation_strength := 1.5
 @export var repath_interval := 0.25
 @export var separation_interval := 0.15
+@export var token_reward := 2
 
 var color_high := Color("3f8f5aff")
 var color_mid := Color("c08a2eff")
@@ -192,12 +193,13 @@ func take_damage(amt) -> void:
 		return
 	health = clampf(health - amt, 0.0, MaxHealth)
 	update_health_bar()
-	if health <= 0.0:
+	if health < 0.5:
 		die()
 
 
 func die() -> void:
 	is_dead = true
+	PlayerStats.add_tokens(token_reward)
 	remove_from_group("Enemies")
 	queue_free()
 

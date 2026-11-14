@@ -16,6 +16,7 @@ const TITLE_SCENE := "res://title_screen.tscn"
 @onready var upgrades: HBoxContainer = %Upgrades
 @onready var health_upgrade_button: Button = %HealthUpgradeButton
 @onready var damage_upgrade_button: Button = %DamageUpgradeButton
+@onready var token_label: Label = %TokenLabel
 
 var _player: Node
 var _finished := false
@@ -49,7 +50,7 @@ func _check_victory() -> void:
 
 
 func _on_player_died() -> void:
-	_show("You Have Fallen", "The ancient wood claims another soul. Choose a boon and rise again.", "Rise Again", true)
+	_show("You Have Fallen", "The ancient wood claims another soul. Spend your tokens on boons, then rise again.", "Rise Again", true)
 
 
 func _show(title: String, text: String, retry_text: String, offer_upgrades := false) -> void:
@@ -66,26 +67,33 @@ func _show(title: String, text: String, retry_text: String, offer_upgrades := fa
 	root_control.show()
 	root_control.modulate.a = 0.0
 	create_tween().tween_property(root_control, "modulate:a", 1.0, 0.6)
+	retry_button.show()
 	if offer_upgrades:
-		health_upgrade_button.text = "Vitality  Health x%.2f -> x%.2f" % [PlayerStats.health_multiplier, PlayerStats.health_multiplier + PlayerStats.HEALTH_STEP]
-		damage_upgrade_button.text = "Might  Damage x%.2f -> x%.2f" % [PlayerStats.damage_multiplier, PlayerStats.damage_multiplier + PlayerStats.DAMAGE_STEP]
+		_refresh_upgrades()
 		upgrades.show()
-		retry_button.hide()
-		health_upgrade_button.grab_focus()
+		token_label.show()
 	else:
 		upgrades.hide()
-		retry_button.show()
-		retry_button.grab_focus()
+		token_label.hide()
+	retry_button.grab_focus()
+
+
+func _refresh_upgrades() -> void:
+	token_label.text = "Tokens: %d" % PlayerStats.tokens
+	health_upgrade_button.text = "Vitality  x%.2f -> x%.2f  (%d tokens)" % [PlayerStats.health_multiplier, PlayerStats.health_multiplier + PlayerStats.HEALTH_STEP, PlayerStats.health_cost()]
+	damage_upgrade_button.text = "Might  x%.2f -> x%.2f  (%d tokens)" % [PlayerStats.damage_multiplier, PlayerStats.damage_multiplier + PlayerStats.DAMAGE_STEP, PlayerStats.damage_cost()]
+	health_upgrade_button.disabled = PlayerStats.tokens < PlayerStats.health_cost()
+	damage_upgrade_button.disabled = PlayerStats.tokens < PlayerStats.damage_cost()
 
 
 func _on_health_upgrade_pressed() -> void:
 	PlayerStats.upgrade_health()
-	_on_retry_pressed()
+	_refresh_upgrades()
 
 
 func _on_damage_upgrade_pressed() -> void:
 	PlayerStats.upgrade_damage()
-	_on_retry_pressed()
+	_refresh_upgrades()
 
 
 func _on_retry_pressed() -> void:

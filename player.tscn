@@ -11,9 +11,6 @@
 [node name="Player" type="CharacterBody3D" unique_id=740369154]
 script = ExtResource("1_4flbx")
 
-[node name="knight" parent="." unique_id=415018791 instance=ExtResource("2_onrkg")]
-transform = Transform3D(-0.959, 0, -1.8889575e-07, 0, 1, 0, 1.4480497e-07, 0, -1.251, 0, -0.981433, 0.018153787)
-
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1756298855]
 shape = SubResource("CapsuleShape3D_g4v7s")
 
@@ -49,5 +46,8 @@ shape = SubResource("BoxShape3D_g4v7s")
 target_position = Vector3(0, 0, 0)
 
 [node name="CoolDown" type="Timer" parent="." unique_id=1021889361]
+
+[node name="knight" parent="." unique_id=908406896 instance=ExtResource("2_onrkg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
 
 [connection signal="timeout" from="CoolDown" to="." method="_on_cool_down_timeout"]

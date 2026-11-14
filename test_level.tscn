@@ -28,6 +28,9 @@ albedo_texture = ExtResource("1_1c2mv")
 
 [node name="Test Level" type="Node3D" unique_id=405898472]
 
+[node name="BigGoblin" parent="." unique_id=2107203550 instance=ExtResource("4_sb12i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2984867, 0.600451, -5.898183)
+
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=562703690]
 environment = SubResource("Environment_4ptq8")
 

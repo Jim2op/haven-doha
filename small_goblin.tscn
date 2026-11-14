@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://6fwlku017014"]
 
 [ext_resource type="Script" uid="uid://cvjivfpb73gx2" path="res://small_goblin.gd" id="1_goblin"]
-[ext_resource type="PackedScene" uid="uid://b70xaswyfahtp" path="res://goblin.glb" id="2_ydv4c"]
+[ext_resource type="PackedScene" uid="uid://tmw4nd8tk5jt" path="res://goblin.gltf" id="2_ydv4c"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_rvvka"]
 size = Vector3(1.5074463, 1.3285522, 0.61816406)
@@ -10,6 +10,9 @@ size = Vector3(1.5074463, 1.3285522, 0.61816406)
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_g4v7s"]
 viewport_path = NodePath("Sprite3D/SubViewport")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ydv4c"]
+bg_color = Color(0, 0, 0, 1)
 
 [node name="SmallGoblin" type="CharacterBody3D" unique_id=2107203550 groups=["Enemies"]]
 script = ExtResource("1_goblin")
@@ -22,9 +25,6 @@ debug_color = Color(0.28923562, 0.49939758, 9.62615e-08, 0.41960785)
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=905968591]
 path_desired_distance = 0.5
 target_desired_distance = 1.2
-
-[node name="goblin" parent="." unique_id=890418456 instance=ExtResource("2_ydv4c")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, -0.66907626, 0)
 
 [node name="ShapeCast3D" type="ShapeCast3D" parent="." unique_id=1870189497]
 transform = Transform3D(2.780457, 0, 0, 0, 1, 0, 0, 0, 2.780457, 0, 0, 0)
@@ -56,8 +56,12 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_ydv4c")
 step = 1.0
 show_percentage = false
 metadata/_edit_use_anchors_ = true
+
+[node name="goblin" parent="." unique_id=1402111590 instance=ExtResource("2_ydv4c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6543268, 0.0010113716)
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

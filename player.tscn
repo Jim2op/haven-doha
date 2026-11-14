@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://d2qc5t8ghsynl"]
 
 [ext_resource type="Script" uid="uid://duvj0vl4r5uiv" path="res://player.gd" id="1_4flbx"]
-[ext_resource type="PackedScene" uid="uid://b10366sbe8fhd" path="res://knight.glb" id="2_onrkg"]
 [ext_resource type="Texture2D" uid="uid://ckqleuoab4pm4" path="res://gem.png" id="3_hqtel"]
 [ext_resource type="FontFile" uid="uid://7xrxknjchofx" path="res://CinzelDecorative-Regular.ttf" id="3_sweqy"]
 [ext_resource type="Theme" uid="uid://72wla8ynwgrh" path="res://ui_theme.tres" id="3_uitheme"]
+[ext_resource type="PackedScene" uid="uid://d1sxx75ryrsrr" path="res://environment/forest_biome/knight.gltf" id="5_sweqy"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g4v7s"]
 radius = 0.001
@@ -85,7 +85,7 @@ target_position = Vector3(0, 0, 0)
 
 [node name="CoolDown" type="Timer" parent="." unique_id=1021889361]
 
-[node name="knight" parent="." unique_id=908406896 instance=ExtResource("2_onrkg")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+[node name="knight" parent="." unique_id=1013696462 instance=ExtResource("5_sweqy")]
+transform = Transform3D(1, 0, 1.7484555e-07, 0, 1, 0, -1.7484555e-07, 0, 1, 0, -0.80223715, 0)
 
 [connection signal="timeout" from="CoolDown" to="." method="_on_cool_down_timeout"]

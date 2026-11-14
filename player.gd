@@ -3,7 +3,7 @@ extends CharacterBody3D
 signal died
 
 const BASE_HEALTH := 100.0
-const BASEDAMAGE := 10.0
+const BASEDAMAGE := 25.0
 const SPEED := 5.0
 const JUMP_VELOCITY := 4.5
 const ATTACK_LIBRARY := "player_fx"
@@ -100,7 +100,7 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, SPEED)
 
 	if input_dir:
-		var yaw := atan2(input_dir.x, input_dir.y)
+		var yaw := atan2(-input_dir.x, -input_dir.y)
 		model.rotation.y = lerp_angle(model.rotation.y, yaw, turn_speed * delta)
 	MeleeRange.position = melee_offset.rotated(Vector3.UP, model.rotation.y)
 	MeleeRange.rotation.y = model.rotation.y

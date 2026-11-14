@@ -2153,7 +2153,7 @@ size = Vector3(208, 6, 1)
 size = Vector3(1, 6, 22)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4li3t"]
-size = Vector3(1, 6, 22)
+size = Vector3(1, 6, 28)
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_ovrct"]
 height = 5.0
@@ -4480,7 +4480,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -104.5, 3, -5)
 shape = SubResource("BoxShape3D_yed7t")
 
 [node name="WallRight" type="CollisionShape3D" parent="NavigationRegion3D/Collision/ForestCollision" unique_id=1730782540]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 104.5, 3, -5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 104.5, 3, -2)
 shape = SubResource("BoxShape3D_4li3t")
 
 [node name="Obstacle1" type="CollisionShape3D" parent="NavigationRegion3D/Collision/ForestCollision" unique_id=1677123193]

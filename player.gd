@@ -1,5 +1,8 @@
 extends CharacterBody3D
 
+## Emitted once when Health reaches 0 (used by the end screen).
+signal died
+
 @onready var MeleeRange = $MeleeRange
 @onready var CoolDownTimer = $CoolDown
 @onready var HealthBar = $Camera3D/HUD/HealthBar
@@ -25,13 +28,7 @@ var threshold = .1
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
 var can_attack = true
-var attacking := false
-var attack_time := 0.0
-var attack_length := 0.4
-var hit_landed := false
-var walk_anim := ""
-var attack_anim := ""
-var melee_offset := Vector3.ZERO
+var is_dead = false
 
 func _physics_process(delta: float) -> void:
 	add_to_group("Enemies")
@@ -79,13 +76,12 @@ func _physics_process(delta: float) -> void:
 	HealthBar.value = Health
 
 	if Health >= 51:
-		sb.bg_color = Color("00d300ff")
+		sb.bg_color = Color("3f8f5aff") # emerald
 	elif Health <= 51 and Health >= 25:
-		sb.bg_color = Color("ff8600ff")
+		sb.bg_color = Color("c08a2eff") # antique amber
 	elif Health <=26:
-		sb.bg_color = Color("ff0000ff")
-
-
+		sb.bg_color = Color("9e2a22ff") # dark crimson
+		
 
 	move_and_slide()
 
@@ -148,6 +144,10 @@ func _find_anim(keys: Array) -> String:
 func take_damage(amt):
 	Health -= amt
 	print(Health)
+	if Health <= 0 and not is_dead:
+		is_dead = true
+		HealthBar.value = 0 # the game pauses on death, so refresh the bar now
+		died.emit()
 
 func _on_cool_down_timeout() -> void:
 	can_attack = true

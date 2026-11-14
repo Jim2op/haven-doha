@@ -1,0 +1,75 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://end_screen.gd" id="1_end"]
+[ext_resource type="Theme" path="res://ui_theme.tres" id="2_theme"]
+
+[node name="EndScreen" type="CanvasLayer"]
+layer = 11
+script = ExtResource("1_end")
+
+[node name="EndRoot" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+
+[node name="Dim" type="ColorRect" parent="EndRoot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.035, 0.027, 0.8)
+
+[node name="Center" type="CenterContainer" parent="EndRoot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="EndRoot/Center"]
+custom_minimum_size = Vector2(820, 0)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="EndRoot/Center/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 26
+
+[node name="Heading" type="Label" parent="EndRoot/Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HeadingLabel"
+text = "You Have Fallen"
+horizontal_alignment = 1
+
+[node name="Message" type="Label" parent="EndRoot/Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "The ancient wood claims another soul."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Buttons" type="HBoxContainer" parent="EndRoot/Center/Panel/VBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 24
+
+[node name="RetryButton" type="Button" parent="EndRoot/Center/Panel/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+text = "Rise Again"
+
+[node name="TitleButton" type="Button" parent="EndRoot/Center/Panel/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+text = "Main Menu"

@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="haven-doha"
-run/main_scene="uid://cnotrxr2im6nb"
+run/main_scene="res://title_screen.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 

@@ -1,0 +1,97 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://title_screen.gd" id="1_title"]
+[ext_resource type="Theme" path="res://ui_theme.tres" id="2_theme"]
+[ext_resource type="PackedScene" path="res://settings_panel.tscn" id="3_settings"]
+
+[node name="TitleScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_title")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.051, 0.082, 0.063, 1)
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="VBoxContainer" parent="Center"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="Center/Content"]
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+text = "Bounce Back"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Center/Content"]
+layout_mode = 2
+theme_type_variation = &"SubtleLabel"
+text = "A tale of the ancient wood"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="Center/Content"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="Menu" type="VBoxContainer" parent="Center/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(440, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 18
+
+[node name="PlayButton" type="Button" parent="Center/Content/Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Play"
+
+[node name="SettingsButton" type="Button" parent="Center/Content/Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Settings"
+
+[node name="QuitButton" type="Button" parent="Center/Content/Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Quit"
+
+[node name="SettingsPanel" parent="Center/Content" instance=ExtResource("3_settings")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Controls" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -600.0
+offset_top = -70.0
+offset_right = 600.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_type_variation = &"SubtleLabel"
+text = "Arrows: move   ·   Space: jump   ·   E: strike   ·   Esc: pause"
+horizontal_alignment = 1

@@ -8,6 +8,17 @@ const SPEED := 5.0
 const JUMP_VELOCITY := 4.5
 const ATTACK_LIBRARY := "player_fx"
 const ATTACK_DURATION := 0.45
+const AnimUtils := preload("res://anim_utils.gd")
+const ATTACK_ANIM_SPEED := 1.6
+const WALK_ANIM_SPEED := 1.2
+const Sfx := preload("res://sfx.gd")
+const SWING_SOUND_PATHS := [
+	"res://Audio/Characters/Knight/Attacking/dragon-studio-sword-slice-393847.mp3",
+	"res://Audio/Characters/Knight/Attacking/dragon-studio-sword-slice-2-393845.mp3",
+]
+const HIT_SOUND_PATH := "res://Audio/Characters/Knight/Attacking/dragon-studio-sword-clashhit-393837.mp3"
+const HURT_SOUND_PATH := "res://Audio/Other/prmodrai-damage-blowhole-402072.mp3"
+const STEP_SOUND_PATH := "res://Audio/Characters/Knight/Walking/freesound_community-footsteps-in-forest-83834.mp3"
 
 @export var turn_speed := 12.0
 @export var hit_point := 0.55
@@ -33,6 +44,11 @@ var walk_anim := ""
 var attack_anim := ""
 var melee_offset := Vector3.ZERO
 var sb := StyleBoxFlat.new()
+var _swing_streams: Array[AudioStream] = []
+var _swing_sfx: AudioStreamPlayer3D
+var _hit_sfx: AudioStreamPlayer3D
+var _hurt_sfx: AudioStreamPlayer3D
+var _step_sfx: AudioStreamPlayer3D
 
 
 func _ready() -> void:
@@ -47,18 +63,19 @@ func _ready() -> void:
 	_update_health_bar()
 
 	melee_offset = MeleeRange.position
+	_setup_sounds()
 	CoolDownTimer.one_shot = true
 
 	if anim:
 		walk_anim = _find_anim(["walk", "run"])
 		if walk_anim != "":
 			anim.get_animation(walk_anim).loop_mode = Animation.LOOP_LINEAR
-		attack_anim = _find_anim(["attack"])
+		attack_anim = AnimUtils.find_attack(anim, ["res://knight.gltf", "res://knight.glb"])
 		if attack_anim == "":
 			attack_anim = _build_attack_animation()
 		if attack_anim != "":
 			anim.get_animation(attack_anim).loop_mode = Animation.LOOP_NONE
-			attack_length = anim.get_animation(attack_anim).length
+			attack_length = anim.get_animation(attack_anim).length / ATTACK_ANIM_SPEED
 
 
 func _physics_process(delta: float) -> void:
@@ -97,6 +114,7 @@ func _physics_process(delta: float) -> void:
 		_update_attack(delta)
 
 	_update_animation()
+	_update_footsteps()
 	move_and_slide()
 
 
@@ -118,7 +136,9 @@ func _start_attack() -> void:
 	attack_time = 0.0
 	if anim and attack_anim != "":
 		anim.stop()
-		anim.play(attack_anim)
+		anim.play(attack_anim, -1, ATTACK_ANIM_SPEED)
+	if not _swing_streams.is_empty():
+		Sfx.play(_swing_sfx, _swing_streams.pick_random(), 0.1)
 
 
 func _update_attack(delta: float) -> void:
@@ -133,6 +153,8 @@ func _update_attack(delta: float) -> void:
 				hits.append(collider)
 		for enemy in hits:
 			enemy.take_damage(BASEDAMAGE * DamageMultiplier)
+		if not hits.is_empty():
+			Sfx.play(_hit_sfx, null, 0.1)
 	if attack_time >= attack_length:
 		attacking = false
 
@@ -142,7 +164,7 @@ func _update_animation() -> void:
 		return
 	if Vector2(velocity.x, velocity.z).length_squared() > 0.01:
 		if walk_anim != "" and anim.current_animation != walk_anim:
-			anim.play(walk_anim)
+			anim.play(walk_anim, -1, WALK_ANIM_SPEED)
 	elif anim.is_playing():
 		anim.stop()
 
@@ -204,10 +226,32 @@ func take_damage(amt) -> void:
 		return
 	Health = maxf(Health - amt, 0.0)
 	_update_health_bar()
+	Sfx.play(_hurt_sfx, null, 0.1)
 	if Health <= 0.0:
 		is_dead = true
+		_step_sfx.stop()
 		died.emit()
 
 
 func _on_cool_down_timeout() -> void:
 	can_attack = true
+
+
+func _setup_sounds() -> void:
+	for path in SWING_SOUND_PATHS:
+		var stream := load(path) as AudioStream
+		if stream:
+			_swing_streams.append(stream)
+	_swing_sfx = Sfx.make_player(self, null, -4.0)
+	_hit_sfx = Sfx.make_player(self, load(HIT_SOUND_PATH), -6.0)
+	_hurt_sfx = Sfx.make_player(self, load(HURT_SOUND_PATH), -10.0)
+	_step_sfx = Sfx.make_player(self, load(STEP_SOUND_PATH), -14.0, true)
+
+
+func _update_footsteps() -> void:
+	var moving := is_on_floor() and Vector2(velocity.x, velocity.z).length_squared() > 0.25
+	if moving and not _step_sfx.playing:
+		_step_sfx.pitch_scale = WALK_ANIM_SPEED
+		_step_sfx.play()
+	elif not moving and _step_sfx.playing:
+		_step_sfx.stop()

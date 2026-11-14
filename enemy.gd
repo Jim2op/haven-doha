@@ -1,5 +1,16 @@
 extends CharacterBody3D
 
+const Sfx := preload("res://sfx.gd")
+const ATTACK_ANIM_SPEED := 1.5
+const MOVE_ANIM_SPEED := 1.2
+const ALERT_RANGE := 14.0
+const ALERT_COOLDOWN_MS := 4000
+const ATTACK_SOUND_PATH := "res://Audio/Characters/Goblin/Attacking/daviddumaisaudio-small-monster-attack-195712.mp3"
+const DEATH_SOUND_PATH := "res://Audio/Characters/Goblin/Death/freesound_community-goblin-death-6729.mp3"
+const ALERT_SOUND_PATH := "res://Audio/Characters/Goblin/Other/phatphrogstudio-monster-goblin-voice-excited-enemy-spotted-519428.mp3"
+
+static var _last_alert_ms := -ALERT_COOLDOWN_MS
+
 @export var base_health := 75.0
 @export var HealthMultiplier := 1.0
 @export var base_damage := 10.0
@@ -12,6 +23,13 @@ extends CharacterBody3D
 @export var repath_interval := 0.25
 @export var separation_interval := 0.15
 @export var token_reward := 2
+@export var attack_sources: PackedStringArray = ["res://goblin.gltf", "res://goblin.glb"]
+
+const AnimUtils := preload("res://anim_utils.gd")
+
+var voice_pitch := 1.0
+var walk_sound_path := ""
+var impact_sound_path := ""
 
 var color_high := Color("3f8f5aff")
 var color_mid := Color("c08a2eff")
@@ -33,6 +51,13 @@ var _separation_left := 0.0
 var _push := Vector3.ZERO
 var _last_target_pos := Vector3.INF
 var _sb := StyleBoxFlat.new()
+var _alerted := false
+var _attack_stream: AudioStream
+var _alert_stream: AudioStream
+var _death_stream: AudioStream
+var _voice_sfx: AudioStreamPlayer3D
+var _impact_sfx: AudioStreamPlayer3D
+var _step_sfx: AudioStreamPlayer3D
 
 @onready var HealthBar: ProgressBar = $Sprite3D/SubViewport/ProgressBar
 @onready var health_viewport: SubViewport = $Sprite3D/SubViewport
@@ -57,17 +82,16 @@ func _ready() -> void:
 	update_health_bar()
 
 	_separation_left = randf() * separation_interval
+	_setup_sounds()
 
 	if anim:
 		move_anim = _find_anim(["run", "walk"])
-		attack_anim = _find_anim(["attack"])
-		if attack_anim == "":
-			attack_anim = _other_anim(move_anim)
+		attack_anim = AnimUtils.find_attack(anim, Array(attack_sources))
 		if move_anim != "":
 			anim.get_animation(move_anim).loop_mode = Animation.LOOP_LINEAR
 		if attack_anim != "":
 			anim.get_animation(attack_anim).loop_mode = Animation.LOOP_NONE
-			attack_length = anim.get_animation(attack_anim).length
+			attack_length = anim.get_animation(attack_anim).length / ATTACK_ANIM_SPEED
 
 
 func _physics_process(delta: float) -> void:
@@ -113,6 +137,7 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_dir.z * speed
 
 	_update_animation()
+	_update_sounds()
 	move_and_slide()
 
 
@@ -146,7 +171,8 @@ func _start_attack() -> void:
 	attack_time = 0.0
 	if anim and attack_anim != "":
 		anim.stop()
-		anim.play(attack_anim)
+		anim.play(attack_anim, -1, ATTACK_ANIM_SPEED)
+	Sfx.play(_voice_sfx, _attack_stream, 0.1, voice_pitch)
 
 
 func _update_attack(delta: float) -> void:
@@ -155,6 +181,8 @@ func _update_attack(delta: float) -> void:
 		hit_landed = true
 		if _target_in_range() and target.has_method("take_damage"):
 			target.take_damage(base_damage * damMultiplier)
+			if _impact_sfx:
+				Sfx.play(_impact_sfx, null, 0.05)
 	if attack_time >= attack_length:
 		attacking = false
 		cool.start()
@@ -171,7 +199,7 @@ func _update_animation() -> void:
 		return
 	if Vector2(velocity.x, velocity.z).length_squared() > 0.01:
 		if move_anim != "" and anim.current_animation != move_anim:
-			anim.play(move_anim)
+			anim.play(move_anim, -1, MOVE_ANIM_SPEED)
 	elif anim.is_playing():
 		anim.stop()
 
@@ -200,6 +228,7 @@ func take_damage(amt) -> void:
 func die() -> void:
 	is_dead = true
 	PlayerStats.add_tokens(token_reward)
+	Sfx.play_at(self, _death_stream, -4.0, 0.05, voice_pitch)
 	remove_from_group("Enemies")
 	queue_free()
 
@@ -243,3 +272,31 @@ func _separation() -> Vector3:
 			var dist := sqrt(d2)
 			push += offset / dist * (1.0 - dist / separation_radius)
 	return push.limit_length(1.0)
+
+
+func _setup_sounds() -> void:
+	_attack_stream = load(ATTACK_SOUND_PATH)
+	_alert_stream = load(ALERT_SOUND_PATH)
+	_death_stream = load(DEATH_SOUND_PATH)
+	_voice_sfx = Sfx.make_player(self, _attack_stream, -6.0)
+	if impact_sound_path != "":
+		_impact_sfx = Sfx.make_player(self, load(impact_sound_path), -12.0)
+	if walk_sound_path != "":
+		_step_sfx = Sfx.make_player(self, load(walk_sound_path), -10.0, true)
+
+
+func _update_sounds() -> void:
+	if not _alerted and target and global_position.distance_to(target.global_position) < ALERT_RANGE:
+		_alerted = true
+		var now := Time.get_ticks_msec()
+		if now - _last_alert_ms >= ALERT_COOLDOWN_MS and not _voice_sfx.playing:
+			_last_alert_ms = now
+			Sfx.play(_voice_sfx, _alert_stream, 0.1, voice_pitch)
+	if _step_sfx == null:
+		return
+	var moving := not attacking and Vector2(velocity.x, velocity.z).length_squared() > 0.25
+	if moving and not _step_sfx.playing:
+		_step_sfx.pitch_scale = MOVE_ANIM_SPEED
+		_step_sfx.play()
+	elif not moving and _step_sfx.playing:
+		_step_sfx.stop()

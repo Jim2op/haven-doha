@@ -26,7 +26,9 @@ script = ExtResource("1_4flbx")
 shape = SubResource("CapsuleShape3D_g4v7s")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=2137834578]
-transform = Transform3D(1, 0, 0, 0, 0.81986845, 0.572552, 0, -0.572552, 0.81986845, 0.01670742, 5.89963, 3.9873018)
+transform = Transform3D(1, 0, 0, 0, 0.8198685, 0.57255197, 0, -0.57255197, 0.8198685, 0.01670742, 4.89963, 3.9873018)
+projection = 1
+size = 11.0
 
 [node name="HUD" type="CanvasLayer" parent="Camera3D" unique_id=837750886]
 

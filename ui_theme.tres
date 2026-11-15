@@ -1,5 +1,7 @@
 [gd_resource type="Theme" format=3 uid="uid://72wla8ynwgrh"]
 
+[ext_resource type="FontFile" uid="uid://boe4jxx3dmva1" path="res://Cinzel-VariableFont_wght.ttf" id="1_cinzel"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mk0s6"]
 content_margin_left = 26.0
 content_margin_top = 12.0
@@ -145,6 +147,7 @@ corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
 [sub_resource type="FontVariation" id="FontVariation_yuc8m"]
+base_font = ExtResource("1_cinzel")
 variation_opentype = {
 2003265652: 600
 }

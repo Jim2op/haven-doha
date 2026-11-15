@@ -230,6 +230,16 @@ func die() -> void:
 	PlayerStats.add_tokens(token_reward)
 	Sfx.play_at(self, _death_stream, -4.0, 0.05, voice_pitch)
 	remove_from_group("Enemies")
+	attacking = false
+	velocity = Vector3.ZERO
+	collision_layer = 0
+	if _step_sfx:
+		_step_sfx.stop()
+	var bar := get_node_or_null("Sprite3D") as Node3D
+	if bar:
+		bar.hide()
+	var wait := AnimUtils.play_death(anim)
+	await get_tree().create_timer(wait).timeout
 	queue_free()
 
 

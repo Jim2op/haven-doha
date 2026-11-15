@@ -87,10 +87,10 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 
-	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
+	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 
-	var input_dir := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	var input_dir := Input.get_vector("left", "right", "forward", "back")
 	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
 		velocity.x = direction.x * SPEED
@@ -228,9 +228,17 @@ func take_damage(amt) -> void:
 	_update_health_bar()
 	Sfx.play(_hurt_sfx, null, 0.1)
 	if Health <= 0.0:
-		is_dead = true
-		_step_sfx.stop()
-		died.emit()
+		_die()
+
+
+func _die() -> void:
+	is_dead = true
+	attacking = false
+	velocity = Vector3.ZERO
+	_step_sfx.stop()
+	var wait := AnimUtils.play_death(anim)
+	await get_tree().create_timer(wait).timeout
+	died.emit()
 
 
 func _on_cool_down_timeout() -> void:

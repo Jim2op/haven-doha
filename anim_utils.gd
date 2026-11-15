@@ -2,6 +2,9 @@ extends RefCounted
 
 const ATTACK_KEYS := ["attack", "slash", "swing", "strike", "punch", "smash"]
 const MOVE_KEYS := ["walk", "run", "move"]
+const DEATH_KEYS := ["die", "death", "dead"]
+const DEATH_ANIM_SPEED := 0.5
+const DEATH_HOLD := 0.8
 const IMPORT_LIBRARY := "imported"
 
 
@@ -31,7 +34,7 @@ static func other_anim(anim: AnimationPlayer) -> String:
 		if lower == "reset" or lower.ends_with("/reset"):
 			continue
 		var is_move := false
-		for k in MOVE_KEYS:
+		for k in MOVE_KEYS + DEATH_KEYS:
 			if k in lower:
 				is_move = true
 		if not is_move:
@@ -66,3 +69,16 @@ static func _import_attack(anim: AnimationPlayer, path: String) -> String:
 		break
 	inst.free()
 	return result
+
+
+static func play_death(anim: AnimationPlayer) -> float:
+	if anim == null:
+		return DEATH_HOLD
+	var death := find_anim(anim, DEATH_KEYS)
+	if death == "":
+		anim.stop()
+		return DEATH_HOLD
+	anim.get_animation(death).loop_mode = Animation.LOOP_NONE
+	anim.stop()
+	anim.play(death, -1, DEATH_ANIM_SPEED)
+	return anim.get_animation(death).length / DEATH_ANIM_SPEED + DEATH_HOLD

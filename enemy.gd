@@ -2,6 +2,7 @@ extends CharacterBody3D
 
 const Sfx := preload("res://sfx.gd")
 const ATTACK_ANIM_SPEED := 1.5
+const KNOCKBACK_DECAY := 22.0
 const MOVE_ANIM_SPEED := 1.2
 const ALERT_RANGE := 14.0
 const ALERT_COOLDOWN_MS := 4000
@@ -23,6 +24,7 @@ static var _last_alert_ms := -ALERT_COOLDOWN_MS
 @export var repath_interval := 0.25
 @export var separation_interval := 0.15
 @export var token_reward := 2
+@export var knockback_scale := 1.0
 @export var attack_sources: PackedStringArray = ["res://goblin.gltf", "res://goblin.glb"]
 
 const AnimUtils := preload("res://anim_utils.gd")
@@ -52,6 +54,8 @@ var _push := Vector3.ZERO
 var _last_target_pos := Vector3.INF
 var _bar_mat: ShaderMaterial
 var _freeze_left := 0.0
+var _knockback := Vector3.ZERO
+var _model: Node3D
 var _alerted := false
 var _attack_stream: AudioStream
 var _alert_stream: AudioStream
@@ -83,6 +87,8 @@ func _ready() -> void:
 	_separation_left = randf() * separation_interval
 	_setup_sounds()
 
+	if anim and anim.get_parent() != self:
+		_model = anim.get_parent() as Node3D
 	if anim:
 		move_anim = _find_anim(["run", "walk"])
 		attack_anim = AnimUtils.find_attack(anim, Array(attack_sources))
@@ -141,6 +147,11 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_dir.x * speed
 		velocity.z = move_dir.z * speed
 
+	if _knockback.length_squared() > 0.0001:
+		velocity.x += _knockback.x
+		velocity.z += _knockback.z
+		_knockback = _knockback.move_toward(Vector3.ZERO, KNOCKBACK_DECAY * delta)
+
 	_update_animation()
 	_update_sounds()
 	move_and_slide()
@@ -178,6 +189,7 @@ func _start_attack() -> void:
 		anim.stop()
 		anim.play(attack_anim, -1, ATTACK_ANIM_SPEED)
 	Sfx.play(_voice_sfx, _attack_stream, 0.1, voice_pitch)
+	Vfx.flash(self, Vfx.TELL_FLASH, 0.22, 0.0)
 
 
 func _update_attack(delta: float) -> void:
@@ -225,10 +237,22 @@ func take_damage(amt) -> void:
 		return
 	health = clampf(health - amt, 0.0, MaxHealth)
 	update_health_bar()
-	if health < 0.5:
+	var killed := health < 0.5
+	Vfx.damage_number(hit_center(), amt, 1 if killed else 0)
+	if killed:
 		die()
 	else:
 		Vfx.flash(self)
+		Vfx.punch_scale(_model)
+
+
+func knockback(direction: Vector3, strength: float) -> void:
+	if is_dead:
+		return
+	var flat := Vector3(direction.x, 0.0, direction.z)
+	if flat.length_squared() < 0.0001:
+		return
+	_knockback = flat.normalized() * strength * knockback_scale
 
 
 func freeze_for(duration: float) -> void:
@@ -246,8 +270,11 @@ func hit_center() -> Vector3:
 func die() -> void:
 	is_dead = true
 	PlayerStats.add_tokens(token_reward)
+	Vfx.token_popup(hit_center(), token_reward)
 	Sfx.play_at(self, _death_stream, -4.0, 0.05, voice_pitch)
 	Vfx.death_burst(hit_center())
+	Vfx.flash(self, Vfx.ENEMY_FLASH, 0.18)
+	Vfx.punch_scale(_model, 1.4)
 	remove_from_group("Enemies")
 	attacking = false
 	velocity = Vector3.ZERO

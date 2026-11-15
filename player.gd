@@ -23,6 +23,12 @@ const SLASH_HEIGHT := -0.25
 const SLASH_LEAD := 0.08
 const HITSTOP_HIT := 0.06
 const HITSTOP_KILL := 0.1
+const COOLDOWN_RING := preload("res://vfx/cooldown_ring.gd")
+const COOLDOWN_RING_HEIGHT := -0.78
+const SWING_VOLUME_DB := -4.0
+const SWING_FADE := 0.18
+const KNOCKBACK := 5.0
+const TOKEN_BUMP := 1.3
 const STEP_SOUND_PATH := "res://Audio/Characters/Knight/Walking/freesound_community-footsteps-in-forest-83834.mp3"
 
 @export var turn_speed := 12.0
@@ -34,7 +40,6 @@ const STEP_SOUND_PATH := "res://Audio/Characters/Knight/Walking/freesound_commun
 @onready var model: Node3D = $knight
 @onready var anim: AnimationPlayer = _find_anim_player()
 @onready var tokenbar = $Camera3D/HUD/Label
-@onready var tokens = PlayerStats.tokens
 var HealthMultiplier := 1.0
 var DamageMultiplier := 1.0
 var MaxHealth := BASE_HEALTH
@@ -57,6 +62,9 @@ var _step_sfx: AudioStreamPlayer3D
 var _slash: MeshInstance3D
 var _slash_played := false
 var _freeze_left := 0.0
+var _cooldown_ring: MeshInstance3D
+var _swing_fade: Tween
+var _token_tween: Tween
 
 
 func _ready() -> void:
@@ -76,7 +84,12 @@ func _ready() -> void:
 	_slash = SLASH_SCENE.instantiate()
 	add_child(_slash)
 	_slash.position = Vector3(0.0, SLASH_HEIGHT, 0.0)
+	_cooldown_ring = COOLDOWN_RING.new()
+	add_child(_cooldown_ring)
+	_cooldown_ring.position = Vector3(0.0, COOLDOWN_RING_HEIGHT, 0.0)
 	_warm_up_vfx.call_deferred()
+	tokenbar.text = str(PlayerStats.tokens)
+	PlayerStats.tokens_changed.connect(_on_tokens_changed)
 
 	if anim:
 		walk_anim = _find_anim(["walk", "run"])
@@ -100,8 +113,6 @@ func _physics_process(delta: float) -> void:
 			anim.speed_scale = 1.0
 		return
 
-	tokenbar.text = str(tokens)
-	
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 
@@ -126,6 +137,7 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("attack") and can_attack and not attacking:
 		can_attack = false
 		CoolDownTimer.start()
+		_cooldown_ring.track(CoolDownTimer)
 		_start_attack()
 
 	if attacking:
@@ -157,7 +169,19 @@ func _start_attack() -> void:
 		anim.stop()
 		anim.play(attack_anim, -1, ATTACK_ANIM_SPEED)
 	if not _swing_streams.is_empty():
-		Sfx.play(_swing_sfx, _swing_streams.pick_random(), 0.1)
+		_play_swing_sound()
+
+
+func _play_swing_sound() -> void:
+	if _swing_fade and _swing_fade.is_valid():
+		_swing_fade.kill()
+	_swing_sfx.volume_db = SWING_VOLUME_DB
+	Sfx.play(_swing_sfx, _swing_streams.pick_random(), 0.1)
+	var cooldown := CoolDownTimer.wait_time
+	_swing_fade = create_tween()
+	_swing_fade.tween_interval(maxf(cooldown - SWING_FADE, 0.0))
+	_swing_fade.tween_property(_swing_sfx, "volume_db", -40.0, SWING_FADE).set_ease(Tween.EASE_IN)
+	_swing_fade.tween_callback(_swing_sfx.stop)
 
 
 func _update_attack(delta: float) -> void:
@@ -178,8 +202,12 @@ func _update_attack(delta: float) -> void:
 			enemy.take_damage(BASEDAMAGE * DamageMultiplier)
 			var at: Vector3 = enemy.hit_center() if enemy.has_method("hit_center") else enemy.global_position + Vector3.UP * 0.5
 			Vfx.hit_spark(at, at - global_position)
+			if enemy.has_method("knockback"):
+				enemy.knockback(at - global_position, KNOCKBACK)
 			if enemy.get("is_dead"):
 				killed = true
+			else:
+				Vfx.impact_ring(at, Vfx.RING_TINT, 1.2)
 		if not hits.is_empty():
 			Sfx.play(_hit_sfx, null, 0.1)
 			Vfx.shake(0.3 if killed else 0.18)
@@ -257,6 +285,7 @@ func take_damage(amt) -> void:
 	_update_health_bar()
 	Sfx.play(_hurt_sfx, null, 0.1)
 	Vfx.hurt(model, global_position)
+	Vfx.damage_number(global_position, amt, 2)
 	if Health <= 0.0:
 		_die()
 
@@ -266,6 +295,7 @@ func _die() -> void:
 	attacking = false
 	velocity = Vector3.ZERO
 	_step_sfx.stop()
+	_cooldown_ring.cancel()
 	_freeze_left = 0.0
 	if anim:
 		anim.speed_scale = 1.0
@@ -292,8 +322,22 @@ func freeze_for(duration: float) -> void:
 		anim.speed_scale = 0.0
 
 
+func _on_tokens_changed(amount: int) -> void:
+	tokenbar.text = str(amount)
+	tokenbar.pivot_offset = tokenbar.size * 0.5
+	if _token_tween and _token_tween.is_valid():
+		_token_tween.kill()
+	tokenbar.scale = Vector2.ONE * TOKEN_BUMP
+	tokenbar.modulate = Color(1.4, 1.3, 1.0)
+	_token_tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_token_tween.tween_property(tokenbar, "scale", Vector2.ONE, 0.3)
+	_token_tween.tween_property(tokenbar, "modulate", Color.WHITE, 0.4)
+
+
 func _on_cool_down_timeout() -> void:
 	can_attack = true
+	if not is_dead:
+		_cooldown_ring.ready_pulse()
 
 
 func _setup_sounds() -> void:
@@ -301,7 +345,7 @@ func _setup_sounds() -> void:
 		var stream := load(path) as AudioStream
 		if stream:
 			_swing_streams.append(stream)
-	_swing_sfx = Sfx.make_player(self, null, -4.0)
+	_swing_sfx = Sfx.make_player(self, null, SWING_VOLUME_DB)
 	_hit_sfx = Sfx.make_player(self, load(HIT_SOUND_PATH), -6.0)
 	_hurt_sfx = Sfx.make_player(self, load(HURT_SOUND_PATH), -10.0)
 	_step_sfx = Sfx.make_player(self, load(STEP_SOUND_PATH), -14.0, true)

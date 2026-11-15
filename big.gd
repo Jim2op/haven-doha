@@ -7,6 +7,7 @@ func _init() -> void:
 	speed = 4.0
 	separation_radius = 3.0
 	token_reward = 5
+	knockback_scale = 0.45
 	attack_sources = ["res://orc.gltf", "res://orc.glb"]
 	voice_pitch = 0.7
 	walk_sound_path = "res://Audio/Characters/Big_Goblin/Walking/bannythecoolio-gentoix27s-bon-footsteps-loop-walk-424387.mp3"

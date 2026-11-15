@@ -23,7 +23,7 @@ var _probe_index := -1
 var _probe_max := 0.0
 
 const PROBE_GAP := 0.6
-const PROBES := ["hit_spark", "death_burst", "flash", "slash", "hurt"]
+const PROBES := ["hit_spark", "death_burst", "flash", "slash", "hurt", "number", "ring", "cooldown"]
 
 
 func _ready() -> void:
@@ -69,9 +69,12 @@ func _stress(delta: float) -> void:
 	if _tick("spark", SPARK_INTERVAL, delta):
 		var at := p + Vector3(randf_range(-3, 3), randf_range(0.0, 1.2), randf_range(-1.5, 1.5))
 		Vfx.hit_spark(at, at - p)
+		Vfx.damage_number(at, randf_range(20.0, 40.0), 1 if randf() < 0.2 else 0)
+		Vfx.impact_ring(at, Vfx.RING_TINT, 1.2)
 		var e = _live_enemy()
 		if e:
 			Vfx.flash(e)
+			Vfx.punch_scale(e._model)
 	if _tick("death", DEATH_INTERVAL, delta):
 		Vfx.death_burst(p + Vector3(randf_range(-3, 3), 0.5, randf_range(-1.5, 1.5)))
 	if _tick("hurt", HURT_INTERVAL, delta):
@@ -111,6 +114,13 @@ func _fire_probe(kind: String) -> void:
 			_player._slash.play(0.0)
 		"hurt":
 			Vfx.hurt(_player.model, p)
+		"number":
+			Vfx.damage_number(p + Vector3(1, 0.5, 0), 25.0)
+		"ring":
+			Vfx.impact_ring(p + Vector3(1, 0.5, 0))
+		"cooldown":
+			_player.CoolDownTimer.start()
+			_player._cooldown_ring.track(_player.CoolDownTimer)
 
 
 func _tick(key: String, interval: float, delta: float) -> bool:

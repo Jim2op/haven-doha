@@ -71,9 +71,9 @@ func _on_settings_closed() -> void:
 
 func _on_restart_pressed() -> void:
 	get_tree().paused = false
-	get_tree().reload_current_scene()
+	SceneLoader.reload_current_scene()
 
 
 func _on_title_pressed() -> void:
 	get_tree().paused = false
-	get_tree().change_scene_to_file(TITLE_SCENE)
+	SceneLoader.change_scene(TITLE_SCENE)

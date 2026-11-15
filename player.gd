@@ -18,6 +18,11 @@ const SWING_SOUND_PATHS := [
 ]
 const HIT_SOUND_PATH := "res://Audio/Characters/Knight/Attacking/dragon-studio-sword-clashhit-393837.mp3"
 const HURT_SOUND_PATH := "res://Audio/Other/prmodrai-damage-blowhole-402072.mp3"
+const SLASH_SCENE := preload("res://vfx/slash_arc.tscn")
+const SLASH_HEIGHT := -0.25
+const SLASH_LEAD := 0.08
+const HITSTOP_HIT := 0.06
+const HITSTOP_KILL := 0.1
 const STEP_SOUND_PATH := "res://Audio/Characters/Knight/Walking/freesound_community-footsteps-in-forest-83834.mp3"
 
 @export var turn_speed := 12.0
@@ -49,6 +54,9 @@ var _swing_sfx: AudioStreamPlayer3D
 var _hit_sfx: AudioStreamPlayer3D
 var _hurt_sfx: AudioStreamPlayer3D
 var _step_sfx: AudioStreamPlayer3D
+var _slash: MeshInstance3D
+var _slash_played := false
+var _freeze_left := 0.0
 
 
 func _ready() -> void:
@@ -65,6 +73,10 @@ func _ready() -> void:
 	melee_offset = MeleeRange.position
 	_setup_sounds()
 	CoolDownTimer.one_shot = true
+	_slash = SLASH_SCENE.instantiate()
+	add_child(_slash)
+	_slash.position = Vector3(0.0, SLASH_HEIGHT, 0.0)
+	_warm_up_vfx.call_deferred()
 
 	if anim:
 		walk_anim = _find_anim(["walk", "run"])
@@ -81,7 +93,13 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if is_dead:
 		return
-	
+
+	if _freeze_left > 0.0:
+		_freeze_left -= delta
+		if _freeze_left <= 0.0 and anim:
+			anim.speed_scale = 1.0
+		return
+
 	tokenbar.text = str(tokens)
 	
 	if not is_on_floor():
@@ -133,6 +151,7 @@ func _update_health_bar() -> void:
 func _start_attack() -> void:
 	attacking = true
 	hit_landed = false
+	_slash_played = false
 	attack_time = 0.0
 	if anim and attack_anim != "":
 		anim.stop()
@@ -143,6 +162,9 @@ func _start_attack() -> void:
 
 func _update_attack(delta: float) -> void:
 	attack_time += delta
+	if not _slash_played and attack_time >= attack_length * hit_point - SLASH_LEAD:
+		_slash_played = true
+		_slash.play(model.rotation.y)
 	if not hit_landed and attack_time >= attack_length * hit_point:
 		hit_landed = true
 		MeleeRange.force_shapecast_update()
@@ -151,10 +173,17 @@ func _update_attack(delta: float) -> void:
 			var collider = MeleeRange.get_collider(i)
 			if collider and collider != self and not hits.has(collider) and collider.is_in_group("Enemies") and collider.has_method("take_damage"):
 				hits.append(collider)
+		var killed := false
 		for enemy in hits:
 			enemy.take_damage(BASEDAMAGE * DamageMultiplier)
+			var at: Vector3 = enemy.hit_center() if enemy.has_method("hit_center") else enemy.global_position + Vector3.UP * 0.5
+			Vfx.hit_spark(at, at - global_position)
+			if enemy.get("is_dead"):
+				killed = true
 		if not hits.is_empty():
 			Sfx.play(_hit_sfx, null, 0.1)
+			Vfx.shake(0.3 if killed else 0.18)
+			Vfx.hit_stop([self] + hits, HITSTOP_KILL if killed else HITSTOP_HIT)
 	if attack_time >= attack_length:
 		attacking = false
 
@@ -227,10 +256,29 @@ func take_damage(amt) -> void:
 	Health = maxf(Health - amt, 0.0)
 	_update_health_bar()
 	Sfx.play(_hurt_sfx, null, 0.1)
+	Vfx.hurt(model, global_position)
 	if Health <= 0.0:
 		is_dead = true
 		_step_sfx.stop()
 		died.emit()
+
+
+func _warm_up_vfx() -> void:
+	_slash.warm_up()
+	var targets: Array = [model]
+	for e in get_tree().get_nodes_in_group("Enemies"):
+		if e != self and e.has_method("hit_center"):
+			targets.append(e)
+			break
+	Vfx.warm_up(targets)
+
+
+func freeze_for(duration: float) -> void:
+	if is_dead:
+		return
+	_freeze_left = maxf(_freeze_left, duration)
+	if anim:
+		anim.speed_scale = 0.0
 
 
 func _on_cool_down_timeout() -> void:

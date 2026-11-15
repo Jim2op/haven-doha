@@ -50,7 +50,8 @@ var _repath_left := 0.0
 var _separation_left := 0.0
 var _push := Vector3.ZERO
 var _last_target_pos := Vector3.INF
-var _sb := StyleBoxFlat.new()
+var _bar_mat: ShaderMaterial
+var _freeze_left := 0.0
 var _alerted := false
 var _attack_stream: AudioStream
 var _alert_stream: AudioStream
@@ -59,8 +60,7 @@ var _voice_sfx: AudioStreamPlayer3D
 var _impact_sfx: AudioStreamPlayer3D
 var _step_sfx: AudioStreamPlayer3D
 
-@onready var HealthBar: ProgressBar = $Sprite3D/SubViewport/ProgressBar
-@onready var health_viewport: SubViewport = $Sprite3D/SubViewport
+@onready var health_bar: MeshInstance3D = $HealthBar
 @onready var AttackRange: ShapeCast3D = $ShapeCast3D
 @onready var cool: Timer = $Timer
 @onready var nav_agent: NavigationAgent3D = $NavigationAgent3D
@@ -75,10 +75,9 @@ func _ready() -> void:
 	if not cool.timeout.is_connected(_on_timer_timeout):
 		cool.timeout.connect(_on_timer_timeout)
 
-	HealthBar.add_theme_stylebox_override("fill", _sb)
+	_bar_mat = health_bar.material_override as ShaderMaterial
 	MaxHealth = base_health * HealthMultiplier
 	health = MaxHealth
-	HealthBar.max_value = MaxHealth
 	update_health_bar()
 
 	_separation_left = randf() * separation_interval
@@ -96,6 +95,12 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if is_dead:
+		return
+
+	if _freeze_left > 0.0:
+		_freeze_left -= delta
+		if _freeze_left <= 0.0 and anim:
+			anim.speed_scale = 1.0
 		return
 
 	if not is_on_floor():
@@ -205,15 +210,14 @@ func _update_animation() -> void:
 
 
 func update_health_bar() -> void:
-	HealthBar.value = health
-	var percent := health / MaxHealth * 100.0 if MaxHealth > 0.0 else 0.0
-	if percent > 50:
-		_sb.bg_color = color_high
-	elif percent > 25:
-		_sb.bg_color = color_mid
-	else:
-		_sb.bg_color = color_low
-	health_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	var ratio := health / MaxHealth if MaxHealth > 0.0 else 0.0
+	var col := color_high
+	if ratio <= 0.25:
+		col = color_low
+	elif ratio <= 0.5:
+		col = color_mid
+	_bar_mat.set_shader_parameter("fill", ratio)
+	_bar_mat.set_shader_parameter("fill_color", col)
 
 
 func take_damage(amt) -> void:
@@ -223,12 +227,27 @@ func take_damage(amt) -> void:
 	update_health_bar()
 	if health < 0.5:
 		die()
+	else:
+		Vfx.flash(self)
+
+
+func freeze_for(duration: float) -> void:
+	if is_dead:
+		return
+	_freeze_left = maxf(_freeze_left, duration)
+	if anim:
+		anim.speed_scale = 0.0
+
+
+func hit_center() -> Vector3:
+	return health_bar.global_position.lerp(global_position, 0.55)
 
 
 func die() -> void:
 	is_dead = true
 	PlayerStats.add_tokens(token_reward)
 	Sfx.play_at(self, _death_stream, -4.0, 0.05, voice_pitch)
+	Vfx.death_burst(hit_center())
 	remove_from_group("Enemies")
 	queue_free()
 

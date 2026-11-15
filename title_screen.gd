@@ -24,7 +24,7 @@ func _ready() -> void:
 
 
 func _on_play_pressed() -> void:
-	get_tree().change_scene_to_file(LEVEL_SCENE)
+	SceneLoader.change_scene(LEVEL_SCENE)
 
 
 func _on_settings_pressed() -> void:

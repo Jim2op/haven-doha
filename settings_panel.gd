@@ -8,6 +8,7 @@ const SETTINGS_PATH := "user://settings.cfg"
 
 @onready var volume_slider: HSlider = %VolumeSlider
 @onready var volume_value: Label = %VolumeValue
+@onready var quality_option: OptionButton = %QualityOption
 @onready var fullscreen_toggle: CheckButton = %FullscreenToggle
 @onready var back_button: Button = %BackButton
 
@@ -43,9 +44,11 @@ func _ready() -> void:
 	var s := load_settings()
 	volume_slider.value = s["volume"]
 	fullscreen_toggle.button_pressed = s["fullscreen"]
+	quality_option.selected = Vfx.quality
 	_update_volume_label(s["volume"])
 	volume_slider.value_changed.connect(_on_volume_changed)
 	fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
+	quality_option.item_selected.connect(_on_quality_selected)
 	back_button.pressed.connect(_on_back_pressed)
 	visibility_changed.connect(func(): if visible: volume_slider.grab_focus())
 
@@ -62,6 +65,11 @@ func _on_fullscreen_toggled(on: bool) -> void:
 	_save()
 
 
+func _on_quality_selected(index: int) -> void:
+	Vfx.set_quality(index)
+	_save()
+
+
 func _update_volume_label(value: float) -> void:
 	volume_value.text = "%d" % int(value)
 
@@ -70,6 +78,7 @@ func _save() -> void:
 	var cfg := ConfigFile.new()
 	cfg.set_value("audio", "master_volume", volume_slider.value)
 	cfg.set_value("video", "fullscreen", fullscreen_toggle.button_pressed)
+	cfg.set_value("video", "quality", Vfx.quality)
 	cfg.save(SETTINGS_PATH)
 
 

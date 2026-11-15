@@ -1,7 +1,7 @@
 // Voxel palette shader for the Kytric "Voxel Path and Terrain" models.
 // Samples a (derived) 256x1 palette with nearest filtering so voxel colours stay crisp,
 // then adds per-instance colour variation, a height-based contact darkening (fake AO),
-// optional wind sway (foliage) and optional emission. Works with MultiMesh and Forward+/Compatibility.
+// optional wind sway (foliage) and optional emission. Works with MultiMesh on the Mobile and Compatibility renderers.
 shader_type spatial;
 render_mode cull_disabled, specular_schlick_ggx;
 

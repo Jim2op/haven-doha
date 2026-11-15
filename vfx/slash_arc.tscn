@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://vfx/slash_arc.gd" id="1_slash"]
+[ext_resource type="Shader" path="res://vfx/slash_arc.gdshader" id="2_slash"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_slash"]
+render_priority = 2
+shader = ExtResource("2_slash")
+shader_parameter/core_color = Color(1, 0.95, 0.78, 1)
+shader_parameter/edge_color = Color(1, 0.62, 0.22, 1)
+shader_parameter/progress = 0.0
+shader_parameter/trail = 0.5
+shader_parameter/intensity = 1.25
+
+[node name="SlashArc" type="MeshInstance3D"]
+material_override = SubResource("ShaderMaterial_slash")
+cast_shadow = 0
+script = ExtResource("1_slash")

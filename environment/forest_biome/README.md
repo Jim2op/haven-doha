@@ -81,7 +81,7 @@ About 185–270 draw calls (shadow passes included), ~0.5–0.65 M triangles per
 
 ## HTML5 / itch.io
 
-* The project uses the **Compatibility** renderer (required for Godot 4.3 Web exports; WebGL 2).
+* Web exports use the **Compatibility** renderer (WebGL 2) via the `rendering_method.web` override.
 * All textures are tiny and imported **lossless** with `detect_3d/compress_to=0`, so the palette-based voxel textures are never
   block-compressed (S3TC/ETC2 would smear a 256×1 palette). Keep the `.import` files when copying assets.
 * `export_presets.cfg` has a **Web** preset: thread support off (no SharedArrayBuffer/COOP headers needed on itch.io), and only the
@@ -91,5 +91,5 @@ About 185–270 draw calls (shadow passes included), ~0.5–0.65 M triangles per
 
 ## Renderer notes
 
-Verified in the Compatibility renderer, on desktop OpenGL and in a WebGL 2 browser build. SSAO in the environment only applies if you switch to Forward+.
+The project targets the **Mobile** renderer (`rendering_method=mobile`); Web builds fall back to Compatibility (`rendering_method.web`). Every shader here compiles on both. No Forward+-only feature (SSAO, SSIL, SSR, SDFGI, volumetric fog) is used. Runtime quality tiers (`res://vfx/vfx.gd`) scale particle amounts, mist octaves, shadows, glow and 3D resolution.
 Volumetric fog is not used: depth/height fog, mist cards and the far-layer haze shader give the same layering on every renderer.

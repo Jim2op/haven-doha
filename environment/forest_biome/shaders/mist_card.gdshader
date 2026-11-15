@@ -11,6 +11,7 @@ uniform float edge_fade = 0.12;
 uniform float noise_scale = 3.0;
 uniform vec2 drift = vec2(0.012, 0.0);
 uniform float near_fade_distance = 14.0;
+uniform int octaves : hint_range(1, 4) = 4;
 
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float noise(vec2 p) {
@@ -18,7 +19,7 @@ float noise(vec2 p) {
 	vec2 u = f * f * (3.0 - 2.0 * f);
 	return mix(mix(hash(i), hash(i + vec2(1, 0)), u.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), u.x), u.y);
 }
-float fbm(vec2 p) { float v = 0.0; float a = 0.5; for (int i = 0; i < 4; i++) { v += a * noise(p); p *= 2.03; a *= 0.5; } return v; }
+float fbm(vec2 p) { float v = 0.0; float a = 0.5; for (int i = 0; i < 4; i++) { if (i >= octaves) { break; } v += a * noise(p); p *= 2.03; a *= 0.5; } return v; }
 
 void fragment() {
 	vec2 uv = UV;

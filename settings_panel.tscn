@@ -43,6 +43,28 @@ layout_mode = 2
 text = "80"
 horizontal_alignment = 2
 
+[node name="QualityRow" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="QualityLabel" type="Label" parent="VBox/QualityRow"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Quality"
+
+[node name="QualityOption" type="OptionButton" parent="VBox/QualityRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 3
+popup/item_0/text = "Low"
+popup/item_0/id = 0
+popup/item_1/text = "Medium"
+popup/item_1/id = 1
+popup/item_2/text = "High"
+popup/item_2/id = 2
+
 [node name="FullscreenToggle" type="CheckButton" parent="VBox"]
 unique_name_in_owner = true
 layout_mode = 2

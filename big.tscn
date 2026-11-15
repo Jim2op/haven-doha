@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://d3x4fddiyselg" path="res://big.gd" id="1_7ljqm"]
 [ext_resource type="PackedScene" uid="uid://dj36o7k0pus77" path="res://orc.gltf" id="2_7ljqm"]
+[ext_resource type="Shader" path="res://vfx/health_bar.gdshader" id="3_hpbar"]
 
 [sub_resource type="CapsuleShape3D" id="BoxShape3D_rvvka"]
 radius = 0.6
@@ -9,11 +10,13 @@ height = 2.63
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_g4v7s"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_g4v7s"]
-viewport_path = NodePath("Sprite3D/SubViewport")
+[sub_resource type="QuadMesh" id="QuadMesh_hpbar"]
+size = Vector2(5.12, 3)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8hpcf"]
-bg_color = Color(0, 0, 0, 1)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hpbar"]
+resource_local_to_scene = true
+render_priority = 1
+shader = ExtResource("3_hpbar")
 
 [node name="BigGoblin" type="CharacterBody3D" unique_id=2107203550 groups=["Enemies"]]
 script = ExtResource("1_7ljqm")
@@ -35,32 +38,11 @@ target_position = Vector3(0, 0, 0)
 [node name="Timer" type="Timer" parent="." unique_id=595525774]
 wait_time = 2.0
 
-[node name="Sprite3D" type="Sprite3D" parent="." unique_id=8857314]
+[node name="HealthBar" type="MeshInstance3D" parent="." unique_id=8857314]
 transform = Transform3D(0.1919004, 0, 0, 0, 0.057349008, -0.5560682, 0, 0.04857043, 0.6565714, 0, 1.8717446, -0.00916326)
-texture = SubResource("ViewportTexture_g4v7s")
-
-[node name="SubViewport" type="SubViewport" parent="Sprite3D" unique_id=911876359]
-transparent_bg = true
-render_target_update_mode = 1
-
-[node name="ProgressBar" type="ProgressBar" parent="Sprite3D/SubViewport" unique_id=1978168326]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -500.0
-offset_top = -150.0
-offset_right = 500.0
-offset_bottom = 150.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_styles/background = SubResource("StyleBoxFlat_8hpcf")
-step = 1.0
-show_percentage = false
-metadata/_edit_use_anchors_ = true
+cast_shadow = 0
+mesh = SubResource("QuadMesh_hpbar")
+material_override = SubResource("ShaderMaterial_hpbar")
 
 [node name="orc" parent="." unique_id=1453355485 instance=ExtResource("2_7ljqm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)

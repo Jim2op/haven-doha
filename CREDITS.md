@@ -53,3 +53,20 @@ Sounds credited to "freesound_community" were re-uploaded to Pixabay from Freeso
 
 - UI Pack: RPG Expansion by Kenney (CC0) — https://kenney.nl
 - Dark Fantasy FREE UI & HUD Kit by AnnoMotion (CC0) — https://annomotion.studio/packs/dark-fantasy-ui-hud-kit
+
+## Bow weapon
+
+Full details: `docs/Bow_Weapon_Asset_Attributions.pdf` (editable source: `docs/Bow_Weapon_Asset_Attributions.md`).
+
+- **Bow, arrow, quiver** by mess110 — CC0 1.0. https://opengameart.org/node/112467
+  `assets/weapons/bow_mess110/bow.glb`, `arrow.glb`
+- **Battle Sound Effects** by artisticdude — CC0 1.0 (also CC-BY 3.0 / CC-BY-SA 3.0 / GPL). https://opengameart.org/content/battle-sound-effects
+  `Audio/Weapons/Bow/Bow.wav`, `swish_2.wav`
+
+## UI icons
+
+Full details: `docs/UI_Asset_Attributions.pdf` (editable source: `docs/UI_Asset_Attributions.md`).
+
+- **Broadsword, Pocket bow, Flaming arrow, Crystal growth** by Lorc — **CC BY 3.0 (credit required)**. https://game-icons.net
+  Credit line: "Icons made by Lorc. Available on https://game-icons.net"
+  `ui/icons/`

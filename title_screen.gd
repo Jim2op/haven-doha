@@ -13,8 +13,8 @@ const LEVEL_SCENE := "res://environment/forest_biome/forest_biome.tscn"
 func _ready() -> void:
 	preload("res://settings_panel.gd").apply_saved()
 	get_tree().paused = false
-	# Browsers cannot close the tab from a game, so Quit is only shown on desktop builds.
-	quit_button.visible = not OS.has_feature("web")
+	# Browsers cannot close the tab and mobile apps should not quit themselves, so Quit is only shown on desktop builds.
+	quit_button.visible = not (OS.has_feature("web") or OS.has_feature("mobile"))
 	play_button.pressed.connect(_on_play_pressed)
 	settings_button.pressed.connect(_on_settings_pressed)
 	quit_button.pressed.connect(func(): get_tree().quit())

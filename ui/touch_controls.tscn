@@ -1,0 +1,67 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/touch_controls.gd" id="1_touch"]
+[ext_resource type="Theme" uid="uid://72wla8ynwgrh" path="res://ui_theme.tres" id="2_theme"]
+
+[node name="TouchControls" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_touch")
+
+[node name="JoystickBase" type="Panel" parent="."]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.55)
+layout_mode = 0
+offset_right = 240.0
+offset_bottom = 240.0
+mouse_filter = 2
+theme_type_variation = &"JoystickBase"
+
+[node name="JoystickKnob" type="Panel" parent="JoystickBase"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 60.0
+offset_top = 60.0
+offset_right = 180.0
+offset_bottom = 180.0
+mouse_filter = 2
+theme_type_variation = &"JoystickKnob"
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Buttons" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+mouse_filter = 2
+theme_override_constants/separation = 24
+
+[node name="WeaponBar" type="HBoxContainer" parent="Margin/Buttons"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 8
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="AttackButton" type="Button" parent="Margin/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 200)
+layout_mode = 2
+size_flags_horizontal = 8
+mouse_filter = 2
+focus_mode = 0
+text = "Attack"

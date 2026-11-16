@@ -1,20 +1,13 @@
 [gd_scene format=3 uid="uid://d2qc5t8ghsynl"]
 
 [ext_resource type="Script" uid="uid://duvj0vl4r5uiv" path="res://player.gd" id="1_4flbx"]
-[ext_resource type="Texture2D" uid="uid://ckqleuoab4pm4" path="res://gem.png" id="3_hqtel"]
+[ext_resource type="Texture2D" path="res://ui/icons/crystal-growth.svg" id="3_gem"]
 [ext_resource type="Theme" uid="uid://72wla8ynwgrh" path="res://ui_theme.tres" id="3_uitheme"]
 [ext_resource type="PackedScene" uid="uid://dpwniruja2q62" path="res://knight.gltf" id="5_sweqy"]
+[ext_resource type="PackedScene" path="res://ui/touch_controls.tscn" id="6_touch"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g4v7s"]
 radius = 0.001
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sweqy"]
-bg_color = Color(0.07058824, 0.05882353, 0.043137256, 1)
-border_width_left = 7
-border_width_top = 7
-border_width_right = 7
-border_width_bottom = 7
-border_color = Color(0.5411765, 0.41568628, 0.18431373, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_g4v7s"]
 
@@ -52,29 +45,102 @@ text = "Vitality"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Label" type="Label" parent="Camera3D/HUD" unique_id=500848429]
-offset_left = 1488.0
-offset_top = 32.0
-offset_right = 1768.0
-offset_bottom = 164.0
+[node name="TokenBox" type="PanelContainer" parent="Camera3D/HUD"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -36.0
+offset_top = 36.0
+offset_right = -36.0
+offset_bottom = 36.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_type_variation = &"HudChip"
+
+[node name="Row" type="HBoxContainer" parent="Camera3D/HUD/TokenBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Gem" type="TextureRect" parent="Camera3D/HUD/TokenBox/Row"]
+modulate = Color(0.45, 0.9, 1, 1)
+custom_minimum_size = Vector2(76, 76)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("3_gem")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TokenLabel" type="Label" parent="Camera3D/HUD/TokenBox/Row"]
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.90924674, 0.84653795, 0.68192714, 1)
-theme_override_font_sizes/font_size = 97
-theme_override_styles/normal = SubResource("StyleBoxFlat_sweqy")
-text = "100"
+theme_override_font_sizes/font_size = 72
+text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ColorRect" type="ColorRect" parent="Camera3D/HUD" unique_id=2103827510]
-offset_left = 1768.0
-offset_top = 32.0
-offset_right = 1895.0
-offset_bottom = 164.0
-color = Color(0.07058824, 0.05882353, 0.043137256, 1)
+[node name="WeaponInfo" type="PanelContainer" parent="Camera3D/HUD"]
+offset_left = 34.0
+offset_top = 186.0
+offset_right = 34.0
+offset_bottom = 186.0
+mouse_filter = 2
+theme_type_variation = &"HudChip"
 
-[node name="Gem" type="Sprite2D" parent="Camera3D/HUD" unique_id=582899797]
-position = Vector2(1832, 99.00001)
-scale = Vector2(0.21875007, 0.23046878)
-texture = ExtResource("3_hqtel")
+[node name="Row" type="HBoxContainer" parent="Camera3D/HUD/WeaponInfo"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 14
+
+[node name="WeaponIcon" type="TextureRect" parent="Camera3D/HUD/WeaponInfo/Row"]
+modulate = Color(0.9, 0.78, 0.5, 1)
+custom_minimum_size = Vector2(54, 54)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Lines" type="VBoxContainer" parent="Camera3D/HUD/WeaponInfo/Row"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="WeaponLabel" type="Label" parent="Camera3D/HUD/WeaponInfo/Row/Lines"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Sword"
+
+[node name="AmmoLabel" type="Label" parent="Camera3D/HUD/WeaponInfo/Row/Lines"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 26
+text = "20 / 20"
+
+[node name="ToastArea" type="CenterContainer" parent="Camera3D/HUD"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -240.0
+offset_bottom = -150.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="Toast" type="Label" parent="Camera3D/HUD/ToastArea"]
+visible = false
+layout_mode = 2
+theme_type_variation = &"HudToast"
+theme_override_font_sizes/font_size = 34
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TouchControls" parent="Camera3D/HUD" instance=ExtResource("6_touch")]
 
 [node name="MeleeRange" type="ShapeCast3D" parent="." unique_id=641616855]
 transform = Transform3D(8.176962, 0, 0, 0, 2.2651815, 0, 0, 0, 6.9499044, 0, 0.31237173, 0.079205036)
